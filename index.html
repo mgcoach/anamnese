@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a0a">
+<title>Anamnese · MG COACH</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MG Anamnese">
+
+<style>
+:root {
+  --bg: #0a0a0a;
+  --bg-2: #161616;
+  --bg-3: #1f1f1f;
+  --border: #2a2a2a;
+  --text: #f5f5f5;
+  --text-2: #b8b8b8;
+  --text-3: #707070;
+  --orange: #ff6b1a;
+  --orange-2: #ff8c42;
+  --orange-glow: rgba(255, 107, 26, 0.4);
+  --success: #10b981;
+  --error: #ef4444;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* === BACKGROUND DECORATIVO === */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(255, 107, 26, 0.10) 0%, transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(255, 140, 66, 0.08) 0%, transparent 45%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app { position: relative; z-index: 1; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
+
+/* === BARRA DE PROGRESSO === */
+.progress-bar {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--bg-2);
+  z-index: 100;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--orange), var(--orange-2));
+  width: 0%;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 12px var(--orange-glow);
+}
+
+/* === HEADER === */
+.header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 4px;
+  z-index: 90;
+}
+.header-brand { display: flex; align-items: center; gap: 10px; }
+.logo-mark {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--orange), var(--orange-2));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px var(--orange-glow);
+}
+.logo-mark svg { width: 20px; height: 20px; fill: #fff; }
+.brand-text h1 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.brand-text h1 span { color: var(--orange); }
+.brand-text .tag {
+  font-size: 0.65rem;
+  color: var(--text-3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.step-counter {
+  font-size: 0.75rem;
+  color: var(--text-3);
+  font-weight: 600;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+/* === CONTAINER === */
+.container {
+  flex: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 20px 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* === STEPS === */
+.step {
+  display: none;
+  animation: slideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.step.active { display: block; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px var(--orange-glow), 0 0 40px rgba(255, 107, 26, 0.2); }
+  50% { box-shadow: 0 0 30px var(--orange-glow), 0 0 60px rgba(255, 107, 26, 0.35); }
+}
+
+.section-label {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--orange);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  padding: 4px 12px;
+  background: rgba(255, 107, 26, 0.1);
+  border: 1px solid rgba(255, 107, 26, 0.3);
+  border-radius: 20px;
+}
+.step h2 {
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 0 0 8px;
+}
+.step .subtitle {
+  color: var(--text-2);
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+/* === CAMPOS === */
+.field-group { margin-bottom: 18px; }
+.field-group + .field-group { margin-top: 0; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 480px) {
+  .field-row { grid-template-columns: 1fr; }
+}
+
+label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-2);
+  margin-bottom: 8px;
+}
+label .req { color: var(--orange); }
+
+input[type="text"], input[type="number"], input[type="tel"], input[type="email"],
+input[type="date"], textarea, select {
+  width: 100%;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: var(--text);
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--orange);
+  background: var(--bg-3);
+  box-shadow: 0 0 0 3px rgba(255, 107, 26, 0.15);
+}
+input::placeholder, textarea::placeholder { color: var(--text-3); }
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23ff6b1a' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 40px;
+}
+
+textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
+
+/* === CHIPS === */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+.chip {
+  background: var(--bg-2);
+  border: 1.5px solid var(--border);
+  color: var(--text-2);
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.chip:hover { border-color: var(--orange); color: var(--text); }
+.chip.selected {
+  background: linear-gradient(135deg, var(--orange), var(--orange-2));
+  border-color: var(--orange);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(255, 107, 26, 0.3);
+}
+.chip.numeric {
+  min-width: 48px;
+  justify-content: center;
+}
+
+/* === CARDS DE OPÇÃO (radio grandes) === */
+.option-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.option-card {
+  background: var(--bg-2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  user-select: none;
+}
+.option-card:hover { border-color: var(--orange); }
+.option-card.selected {
+  background: rgba(255, 107, 26, 0.1);
+  border-color: var(--orange);
+  box-shadow: 0 0 0 2px rgba(255, 107, 26, 0.2);
+}
+.option-card .emoji { font-size: 2rem; margin-bottom: 6px; display: block; }
+.option-card .label { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+.option-card .sub { font-size: 0.75rem; color: var(--text-3); margin-top: 2px; }
+
+/* === ESCALA 1-5 === */
+.scale {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.scale-item {
+  background: var(--bg-2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 6px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: all 0.2s;
+  user-select: none;
+}
+.scale-item:hover { border-color: var(--orange); }
+.scale-item.selected {
+  background: linear-gradient(135deg, var(--orange), var(--orange-2));
+  border-color: var(--orange);
+  color: #fff;
+  transform: scale(1.05);
+}
+.scale-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--text-3);
+  margin-top: 6px;
+  padding: 0 4px;
+}
+
+/* === NAVEGAÇÃO === */
+.nav-buttons {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  padding: 14px 20px;
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
+  display: flex;
+  gap: 10px;
+  z-index: 80;
+}
+.nav-buttons .inner {
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--orange), var(--orange-2));
+  color: #fff;
+  box-shadow: 0 4px 14px var(--orange-glow);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--orange-glow); }
+.btn-primary:active { transform: translateY(0); }
+.btn-secondary {
+  background: var(--bg-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  max-width: 120px;
+}
+.btn-secondary:hover { background: var(--bg-3); border-color: var(--orange); }
+.btn-whatsapp {
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.4);
+  font-size: 1rem;
+}
+.btn-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(37, 211, 102, 0.5); }
+
+.btn[disabled] { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+
+/* === TELA INICIAL === */
+.welcome {
+  text-align: center;
+  padding: 30px 0;
+  animation: fadeIn 0.6s ease-out;
+}
+.welcome .logo-big {
+  width: 88px;
+  height: 88px;
+  background: linear-gradient(135deg, var(--orange), var(--orange-2));
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}
+.welcome .logo-big svg { width: 50px; height: 50px; fill: #fff; }
+.welcome h1 {
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin-bottom: 4px;
+}
+.welcome h1 span { color: var(--orange); }
+.welcome .tagline {
+  color: var(--text-3);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+}
+.welcome h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+.welcome p {
+  color: var(--text-2);
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+.welcome .features {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 30px 0;
+  text-align: left;
+}
+.welcome .feat {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.welcome .feat-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 107, 26, 0.15);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+.welcome .feat-text { font-size: 0.8rem; color: var(--text-2); line-height: 1.3; font-weight: 500; }
+@media (max-width: 380px) {
+  .welcome .features { grid-template-columns: 1fr; }
+}
+
+/* === TELA FINAL === */
+.success {
+  text-align: center;
+  padding: 30px 0;
+  animation: fadeIn 0.6s ease-out;
+}
+.success .check-circle {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, var(--success), #059669);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  animation: checkPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.4);
+}
+.success .check-circle svg { width: 56px; height: 56px; fill: #fff; }
+@keyframes checkPop {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+.success h2 { font-size: 1.7rem; margin-bottom: 12px; }
+.success p { color: var(--text-2); margin-bottom: 24px; line-height: 1.6; }
+.success .summary-card {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  margin: 20px 0;
+  text-align: left;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 0.85rem;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+.success .summary-card strong { color: var(--orange); }
+
+/* === HELPERS === */
+.hint {
+  font-size: 0.75rem;
+  color: var(--text-3);
+  margin-top: 6px;
+  font-style: italic;
+}
+.error-msg {
+  font-size: 0.8rem;
+  color: var(--error);
+  margin-top: 6px;
+  display: none;
+}
+.field-group.error input,
+.field-group.error textarea,
+.field-group.error select { border-color: var(--error); }
+.field-group.error .error-msg { display: block; }
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
+
+/* Esconde números do input mas mantém edição numérica */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] { -moz-appearance: textfield; }
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-3);
+  border: 1px solid var(--orange);
+  color: var(--text);
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  z-index: 200;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  display: none;
+  animation: fadeIn 0.3s;
+}
+
+</style>
+</head>
+<body>
+
+<div class="app">
+  
+  <!-- Barra de progresso -->
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+  
+  <!-- Header -->
+  <div class="header">
+    <div class="header-brand">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24"><path d="M12 2L13.5 8L20 9L15 13.5L16.5 20L12 16.5L7.5 20L9 13.5L4 9L10.5 8L12 2Z"/></svg>
+      </div>
+      <div class="brand-text">
+        <h1>MG<span>.</span>COACH</h1>
+        <div class="tag">Anamnese</div>
+      </div>
+    </div>
+    <div class="step-counter" id="stepCounter">Início</div>
+  </div>
+  
+  <!-- Container -->
+  <div class="container">
+    
+    <!-- ========== TELA 0: BOAS-VINDAS ========== -->
+    <div class="step active" data-step="0">
+      <div class="welcome">
+        <div class="logo-big">
+          <svg viewBox="0 0 24 24"><path d="M12 2L13.5 8L20 9L15 13.5L16.5 20L12 16.5L7.5 20L9 13.5L4 9L10.5 8L12 2Z"/></svg>
+        </div>
+        <h1>MG<span>.</span>COACH</h1>
+        <div class="tagline">Treino · Nutrição · Performance</div>
+        
+        <h2>Vamos começar sua jornada</h2>
+        <p>Esta anamnese vai me ajudar a montar o melhor plano de treino e nutrição pra <strong>você</strong>.</p>
+        <p style="font-size: 0.85rem; color: var(--text-3);">⏱️ Leva cerca de 5-7 minutos</p>
+        
+        <div class="features">
+          <div class="feat">
+            <div class="feat-icon">💪</div>
+            <div class="feat-text">Treino personalizado pra sua realidade</div>
+          </div>
+          <div class="feat">
+            <div class="feat-icon">🍽️</div>
+            <div class="feat-text">Plano alimentar adaptado à sua rotina</div>
+          </div>
+          <div class="feat">
+            <div class="feat-icon">📊</div>
+            <div class="feat-text">Acompanhamento de evolução</div>
+          </div>
+          <div class="feat">
+            <div class="feat-icon">🎯</div>
+            <div class="feat-text">Foco no seu objetivo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ========== STEP 1: DADOS PESSOAIS ========== -->
+    <div class="step" data-step="1">
+      <span class="section-label">1 · Sobre você</span>
+      <h2>Vamos nos conhecer</h2>
+      <p class="subtitle">Comece pelos seus dados básicos.</p>
+      
+      <div class="field-group" data-required>
+        <label>Nome completo <span class="req">*</span></label>
+        <input type="text" id="q_nome" autocomplete="name" placeholder="Ex: Maria Silva">
+        <div class="error-msg">Por favor, preencha seu nome</div>
+      </div>
+      
+      <div class="field-row">
+        <div class="field-group" data-required>
+          <label>Idade <span class="req">*</span></label>
+          <input type="number" id="q_idade" min="10" max="100" placeholder="anos" inputmode="numeric">
+          <div class="error-msg">Informe sua idade</div>
+        </div>
+        <div class="field-group" data-required>
+          <label>Sexo <span class="req">*</span></label>
+          <select id="q_sexo">
+            <option value="">Selecione</option>
+            <option>Masculino</option>
+            <option>Feminino</option>
+            <option>Prefiro não informar</option>
+          </select>
+          <div class="error-msg">Selecione</div>
+        </div>
+      </div>
+      
+      <div class="field-row">
+        <div class="field-group" data-required>
+          <label>Peso atual (kg) <span class="req">*</span></label>
+          <input type="number" id="q_peso" min="30" max="250" step="0.1" placeholder="kg" inputmode="decimal">
+          <div class="error-msg">Informe seu peso</div>
+        </div>
+        <div class="field-group" data-required>
+          <label>Altura (cm) <span class="req">*</span></label>
+          <input type="number" id="q_altura" min="120" max="230" placeholder="cm" inputmode="numeric">
+          <div class="error-msg">Informe sua altura</div>
+        </div>
+      </div>
+      
+      <div class="field-group">
+        <label>Cidade / Estado</label>
+        <input type="text" id="q_cidade" placeholder="Ex: Salvador / BA">
+      </div>
+      
+      <div class="field-group">
+        <label>Profissão</label>
+        <input type="text" id="q_profissao" placeholder="Ex: Médica, Engenheiro, Estudante...">
+        <div class="hint">A profissão me ajuda a entender sua rotina diária</div>
+      </div>
+      
+      <div class="field-group" data-required>
+        <label>WhatsApp pra contato <span class="req">*</span></label>
+        <input type="tel" id="q_whatsapp" placeholder="(00) 90000-0000" inputmode="tel">
+        <div class="error-msg">Preciso do seu WhatsApp pra retornar</div>
+      </div>
+    </div>
+    
+    <!-- ========== STEP 2: OBJETIVO ========== -->
+    <div class="step" data-step="2">
+      <span class="section-label">2 · Objetivo</span>
+      <h2>O que você quer alcançar?</h2>
+      <p class="subtitle">Selecione seu principal objetivo agora.</p>
+      
+      <div class="option-cards" data-single="q_objetivo">
+        <div class="option-card" data-value="Emagrecimento">
+          <span class="emoji">🔥</span>
+          <div class="label">Emagrecer</div>
+          <div class="sub">Perder gordura</div>
+        </div>
+        <div class="option-card" data-value="Hipertrofia">
+          <span class="emoji">💪</span>
+          <div class="label">Hipertrofia</div>
+          <div class="sub">Ganhar massa</div>
+        </div>
+        <div class="option-card" data-value="Definição / Cutting">
+          <span class="emoji">✂️</span>
+          <div class="label">Definição</div>
+          <div class="sub">Cutting</div>
+        </div>
+        <div class="option-card" data-value="Manutenção / Saúde">
+          <span class="emoji">⚖️</span>
+          <div class="label">Manutenção</div>
+          <div class="sub">Saúde geral</div>
+        </div>
+        <div class="option-card" data-value="Performance esportiva">
+          <span class="emoji">🏃</span>
+          <div class="label">Performance</div>
+          <div class="sub">Esportiva</div>
+        </div>
+        <div class="option-card" data-value="Reabilitação / Pós-lesão">
+          <span class="emoji">🩹</span>
+          <div class="label">Reabilitação</div>
+          <div class="sub">Pós-lesão</div>
+        </div>
+      </div>
+      
+      <div class="field-group" style="margin-top: 24px;">
+        <label>Descreva seu objetivo com suas palavras</label>
+        <textarea id="q_objetivoDesc" rows="3" placeholder="Ex: Quero perder 8kg em 4 meses, definir o abdômen e manter força nos treinos..."></textarea>
+      </div>
+      
+      <div class="field-group">
+        <label>Qual seu prazo?</label>
+        <select id="q_prazo">
+          <option value="">Selecione</option>
+          <option>Sem pressa, foco em consistência</option>
+          <option>1-3 meses (curto prazo)</option>
+          <option>3-6 meses (médio prazo)</option>
+          <option>6-12 meses (longo prazo)</option>
+          <option>Mais de 1 ano (jornada contínua)</option>
+        </select>
+      </div>
+    </div>
+    
+    <!-- ========== STEP 3: DISPONIBILIDADE TREINO ========== -->
+    <div class="step" data-step="3">
+      <span class="section-label">3 · Disponibilidade</span>
+      <h2>Quando você pode treinar?</h2>
+      <p class="subtitle">Vamos montar uma rotina que cabe na sua semana.</p>
+      
+      <div class="field-group">
+        <label>Quantos dias por semana você consegue treinar? <span class="req">*</span></label>
+        <div class="chips" data-single="q_diasSemana">
+          <div class="chip numeric" data-value="1">1</div>
+          <div class="chip numeric" data-value="2">2</div>
+          <div class="chip numeric" data-value="3">3</div>
+          <div class="chip numeric" data-value="4">4</div>
+          <div class="chip numeric" data-value="5">5</div>
+          <div class="chip numeric" data-value="6">6</div>
+          <div class="chip numeric" data-value="7">7</div>
+        </div>
+      </div>
+      
+      <div class="field-group">
+        <label>Em quais horários você prefere treinar? <span class="req">*</span></label>
+        <div class="chips" data-multi="q_horarios">
+          <div class="chip" data-value="Madrugada (4h-6h)">🌌 Madrugada</div>
+          <div class="chip" data-value="Manhã (6h-11h)">🌅 Manhã</div>
+          <div class="chip" data-value="Almoço (11h-14h)">☀️ Almoço</div>
+          <div class="chip" data-value="Tarde (14h-18h)">🌞 Tarde</div>
+          <div class="chip" data-value="Noite (18h-22h)">🌃 Noite</div>
+          <div class="chip" data-value="Flexível">🔀 Flexível</div>
+        </div>
+        <div class="hint">Pode marcar mais de um</div>
+      </div>
+      
+      <div class="field-group">
+        <label>Quanto tempo você tem por sessão de treino?</label>
+        <div class="chips" data-single="q_tempoSessao">
+          <div class="chip" data-value="30-45 min">30-45 min</div>
+          <div class="chip" data-value="45-60 min">45-60 min</div>
+          <div class="chip" data-value="60-75 min">60-75 min</div>
+          <div class="chip" data-value="75-90 min">75-90 min</div>
+          <div class="chip" data-value="Mais de 90 min">+90 min</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ========== STEP 4: ONDE TREINA ========== -->
+    <div class="step" data-step="4">
+      <span class="section-label">4 · Local de treino</span>
+      <h2>Onde você treina?</h2>
+      <p class="subtitle">Preciso saber o maquinário disponível pra montar o melhor treino.</p>
+      
+      <div class="field-group">
+        <label>Qual o local principal? <span class="req">*</span></label>
+        <div class="option-cards" data-single="q_localTreino">
+          <div class="option-card" data-value="Academia de rede">
+            <span class="emoji">🏋️</span>
+            <div class="label">Academia de rede</div>
+            <div class="sub">Smart Fit, Selfit...</div>
+          </div>
+          <div class="option-card" data-value="Academia local">
+            <span class="emoji">🏢</span>
+            <div class="label">Academia local</div>
+            <div class="sub">De bairro</div>
+          </div>
+          <div class="option-card" data-value="Em casa">
+            <span class="emoji">🏠</span>
+            <div class="label">Em casa</div>
+            <div class="sub">Home gym</div>
+          </div>
+          <div class="option-card" data-value="Ao ar livre">
+            <span class="emoji">🌳</span>
+            <div class="label">Ao ar livre</div>
+            <div class="sub">Parque, praia</div>
+          </div>
+          <div class="option-card" data-value="CrossFit / Box">
+            <span class="emoji">🤸</span>
+            <div class="label">CrossFit</div>
+            <div class="sub">Box / Funcional</div>
+          </div>
+          <div class="option-card" data-value="Estúdio personalizado">
+            <span class="emoji">👥</span>
+            <div class="label">Estúdio</div>
+            <div class="sub">Personalizado</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="field-group" id="grupoAcademiaRede" style="display:none;">
+        <label>Qual rede de academia?</label>
+        <div class="chips" data-single="q_redeAcademia">
+          <div class="chip" data-value="Smart Fit">Smart Fit</div>
+          <div class="chip" data-value="Selfit">Selfit</div>
+          <div class="chip" data-value="Skyfit">Skyfit</div>
+          <div class="chip" data-value="Bluefit">Bluefit</div>
+          <div class="chip" data-value="Bio Ritmo">Bio Ritmo</div>
+          <div class="chip" data-value="Bodytech">Bodytech</div>
+          <div class="chip" data-value="Pratique Fitness">Pratique</div>
+          <div class="chip" data-value="Just Fit">Just Fit</div>
+          <div class="chip" data-value="Outra">Outra</div>
+        </div>
+      </div>
+      
+      <div class="field-group" id="grupoOutraRede" style="display:none;">
+        <label>Qual o nome da academia?</label>
+        <input type="text" id="q_nomeAcademia" placeholder="Ex: Academia Fit Vida">
+      </div>
+      
+      <div class="field-group" id="grupoEquipCasa" style="display:none;">
+        <label>Que equipamentos você tem em casa?</label>
+        <textarea id="q_equipCasa" rows="3" placeholder="Ex: Halteres de 5 e 10kg, banco regulável, elástico, barra fixa..."></textarea>
+        <div class="hint">Liste tudo que tiver à disposição</div>
+      </div>
+    </div>
+    
+    <!-- ========== STEP 5: HISTÓRICO DE TREINO ========== -->
+    <div class="step" data-step="5">
+      <span class="section-label">5 · Experiência</span>
+      <h2>Sua experiência com treino</h2>
+      <p class="subtitle">Pra calibrar o nível certo de treino pra você.</p>
+      
+      <div class="field-group">
+        <label>Como você se classifica? <span class="req">*</span></label>
+        <div class="option-cards" data-single="q_nivelExp">
+          <div class="option-card" data-value="Iniciante (nunca treinou ou há +1 ano sem treinar)">
+            <span class="emoji">🌱</span>
+            <div class="label">Iniciante</div>
+            <div class="sub">Começando agora</div>
+          </div>
+          <div class="option-card" data-value="Iniciante-Intermediário (até 6 meses)">
+            <span class="emoji">🌿</span>
+            <div class="label">Iniciante+</div>
+            <div class="sub">Até 6 meses</div>
+          </div>
+          <div class="option-card" data-value="Intermediário (6m a 2 anos)">
+            <span class="emoji">🌳</span>
+            <div class="label">Intermediário</div>
+            <div class="sub">6m a 2 anos</div>
+          </div>
+          <div class="option-card" data-value="Avançado (mais de 2 anos)">
+            <span class="emoji">🏆</span>
+            <div class="label">Avançado</div>
+            <div class="sub">+2 anos</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="field-group">
+        <label>Que modalidades você já praticou ou pratica?</label>
+        <div class="chips" data-multi="q_modalidades">
+          <div class="chip" data-value="Musculação">🏋️ Musculação</div>
+          <div class="chip" data-value="Corrida">🏃 Corrida</div>
+          <div class="chip" data-value="Ciclismo">🚴 Ciclismo</div>
+          <div class="chip" data-value="Natação">🏊 Natação</div>
+          <div class="chip" data-value="CrossFit">🤸 CrossFit</div>
+          <div class="chip" data-value="Funcional">🔄 Funcional</div>
+          <div class="chip" data-value="Pilates">🧘 Pilates</div>
+          <div class="chip" data-value="Yoga">🕉️ Yoga</div>
+          <div class="chip" data-value="Lutas / MMA">🥊 Lutas</div>
+          <div class="chip" data-value="Futebol">⚽ Futebol</div>
+          <div class="chip" data-value="Dança">💃 Dança</div>
+          <div class="chip" data-value="Calistenia">🤾 Calistenia</div>
+        </div>
+        <div class="hint">Marque todas que se aplicam</div>
+      </div>
+      
+      <div class="field-group">
+        <label>Quais exercícios você não gosta ou não consegue executar?</label>
+        <textarea id="q_exerciciosEvitar" rows="2" placeholder="Ex: Agachamento livre, supino com barra..."></textarea>
+        <div class="hint">Opcional — me ajuda a evitar na prescrição</div>
+      </div>
+    </div>
+    
+    <!-- ========== STEP 6: SAÚDE E IMPEDIMENTOS ========== -->
+    <div class="step" data-step="6">
+      <span class="section-label">6 · Saúde</span>
+      <h2>Cuidando da sua segurança</h2>
+      <p class="subtitle">Informações de saúde para prescrever com cuidado.</p>
+      
+      <div class="field-group">
+        <label>Você tem alguma lesão atual ou em recuperação? <span class="req">*</span></label>
+        <div class="chips" data-single="q_lesaoAtual">
+          <div class="chip" data-value="Não">✅ Não</div>
+          <div class="chip" data-value="Sim">⚠️ Sim</div>
+        </div>
+      </div>
+      
+      <div class="field-group" id="grupoLesaoDesc" style="display:none;">
+        <label>Descreva a lesão atual</label>
+        <textarea id="q_lesaoDesc" rows="2" placeholder="Ex: Tendinite no ombro direito há 2 meses, em fisioterapia..."></textarea>
+      </div>
+      
+      <div class="field-group">
+        <label>Tem alguma destas condições? (marque todas que se aplicam)</label>
+        <div class="chips" data-multi="q_condicoes">
+          <div class="chip" data-value="Hipertensão">Hipertensão</div>
+          <div class="chip" data-value="Diabetes">Diabetes</div>
+          <div class="chip" data-value="Cardiopatia">Problemas cardíacos</div>
+          <div class="chip" data-value="Asma">Asma</div>
+          <div class="chip" data-value="Hérnia de disco">Hérnia de disco</div>
+          <div class="chip" data-value="Artrose / Artrite">Artrose / Artrite</div>
+          <div class="chip" data-value="Tireoide">Tireoide</div>
+          <div class="chip" data-value="Colesterol alto">Colesterol alto</div>
+          <div class="chip" data-value="Ansiedade / Depressão">Ansiedade / Depressão</div>
+          <div class="chip" data-value="Nenhuma">✅ Nenhuma</div>
+        </div>
+      </div>
+      
+      <div class="field-group">
+        <label>Lesões ou cirurgias anteriores (passado)</label>
+        <textarea id="q_lesaoPassado" rows="2" placeholder="Ex: Cirurgia no joelho em 2020, recuperada..."></textarea>
+        <div class="hint">Opcional</div>
+      </div>
+      
+      <div class="field-group">
+        <label>Faz uso contínuo de algum medicamento?</label>
+        <textarea id="q_medicamentos" rows="2" placeholder="Ex: Losartana 50mg, anticoncepcional..."></textarea>
+        <div class="hint">Opcional</div>
+      </div>
+      
+      <div class="field-group" id="grupoGravidez" style="display:none;">
+        <label>Você está gestante ou amamentando?</label>
+        <div class="chips" data-single="q_gravidez">
+          <div class="chip" data-value="Não">Não</div>
+          <div class="chip" data-value="Gestante">🤰 Gestante</div>
+          <div class="chip" data-value="Amamentando">🤱 Amamentando</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ========== STEP 7: ROTINA ALIMENTAR ========== -->
+    <div class="step" data-step="7">
+      <span class="section-label">7 · Rotina alimentar</span>
+      <h2>Como é seu dia a dia com comida?</h2>
+      <p class="subtitle">Vou montar um plano que se encaixa na sua rotina, não o contrário.</p>
+      
+      <div class="field-group">
+        <label>Quantas refeições por dia você costuma fazer? <span class="req">*</span></label>
+        <div class="chips" data-single="q_numRefeicoes">
+          <div class="chip numeric" data-value="2">2</div>
+          <div class="chip numeric" data-value="3">3</div>
+          <div class="chip numeric" data-value="4">4</div>
+          <div class="chip numeric" data-value="5">5</div>
+          <div class="chip numeric" data-value="6">6</div>
+          <div class="chip" data-value="Sem rotina">Sem rotina</div>
+        </div>
+      </div>
+      
+      <div class="field-row">
+        <div class="field-group">
+          <label>Que horas costuma acordar?</label>
+          <input type="text" id="q_horaAcordar" placeholder="Ex: 06:30" inputmode="numeric">
+        </div>
+        <div class="field-group">
+          <label>Que horas costuma dormir?</label>
+          <input type="text" id="q_horaDormir" placeholder="Ex: 23:00" inputmode="numeric">
+        </div>
+      </div>
+      
+      <div class="field-group">
+        <label>Onde você faz a maior parte das refeições?</label>
+        <div class="chips" data-multi="q_ondeRefeicao">
+          <div class="chip" data-value="Em casa">🏠 Em casa</div>
+          <div class="chip" data-value="No trabalho (marmita)">🍱 Marmita</div>
+          <div class="chip" data-value="Restaurante / Self-service">🍽️ Restaurante</div>
+          <div class="chip" data-value="Delivery / Fast food">🛵 Delivery</div>
+          <div class="chip" data-value="Variado">🔀 Variado</div>
+        </div>
+      </div>
+      
+      <div class="field-group">
+        <label>Quem prepara suas refeições?</label>
+        <div class="chips" data-single="q_quemPrepara">
+          <div class="chip" data-value="Eu mesmo(a)">👤 Eu mesmo(a)</div>
+          <div class="chip" data-value="Familiar">👨‍👩‍👧 Familiar</div>
+          <div class="chip" data-value="Cozinheira / Empregada">👩‍🍳 Cozinheira</div>
+          <div class="chip" data-value="Restaurante">🏪 Restaurante</div>
+          <div class="chip" data-value="Misto">🔀 Misto</div>
+        </div>
+      </div>
+      
+      <div class="field-group">
+        <label>Quanto de água você bebe por dia (em média)?</label>
+        <div class="chips" data-single="q_agua">
+          <div class="chip" data-value="Menos de 1L">< 1L</div>
+          <div class="chip" data-value="1-2L">1-2L</div>
+          <div class="chip" data-value="2-3L">2-3L</div>
+          <div class="chip" data-value="Mais de 3L">+ 3L</div>
+          <div class="chip" data-value="Não controlo">Não controlo</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ========== STEP 8: PREFERÊNCIAS ALIMENTARES ========== -->
+    <div class="step" data-step="8">
+      <span class="section-label">8 · Preferências</span>
+      <h2>Seu paladar e restrições</h2>
+      <p class="subtitle">Não vou te mandar comer o que você odeia, prometo.</p>
+      
+      <div class="field-group" data-required>
+        <label>Alimentos que você consome com mais frequência <span class="req">*</span></label>
+        <textarea id="q_alimentosFreq" rows="4" placeholder="Ex: Arroz, frango, ovo, batata-doce, banana, aveia, café preto, iogurte..."></textarea>
+        <div class="hint">Liste o que costuma comer no dia a dia. Quanto mais detalhe, melhor!</div>
+        <div class="error-msg">Liste pelo menos alguns alimentos</div>
+      </div>
+      
+      <div class="field-group">
+        <label>Alimentos que NÃO consome de forma nenhuma</label>
+        <textarea id="q_alimentosNao" rows="3" placeholder="Ex: Peixe, jiló, leite, glúten..."></textarea>
+        <div class="hint">Por que? Alergia, intolerância, aversão, restrição religiosa?</div>
+      </div>
+      
+      <div class="field-group">
+        <label>Tem alguma restrição alimentar?</label>
+        <div class="chips" data-multi="q_restricoes">
+          <div class="chip" data-value="Vegetariano">🥦 Vegetariano</div>
+          <div class="chip" data-value="Vegano">🌱 Vegano</div>
+          <div class="chip" data-value="Intolerância à lactose">🥛 Lactose</div>
+          <div class="chip" data-value="Intolerância ao glúten / Celíaco">🌾 Glúten</div>
+          <div class="chip" data-value="Diabético">🩸 Diabético</div>
+          <div class="chip" data-value="Low-carb">🥑 Low-carb</div>
+          <div class="chip" data-value="Cetogênica">🥓 Cetogênica</div>
+          <div class="chip" data-value="Jejum intermitente">⏰ Jejum interm.</div>
+          <div class="chip" data-value="Nenhuma">✅ Nenhuma</div>
+        </div>
+      </div>
+      
+      <div class="field-group">
+        <label>Quais alimentos você ADORA e gostaria de manter no plano?</label>
+        <textarea id="q_alimentosFav" rows="2" placeholder="Ex: Pão de queijo no café, chocolate amargo à tarde..."></textarea>
+        <div class="hint">Vou tentar encaixar suas preferências sempre que possível</div>
+      </div>
+    </div>
+    
+    <!-- ========== STEP 9: SUPLEMENTAÇÃO E BEBIDAS ========== -->
+    <div class="step" data-step="9">
+      <span class="section-label">9 · Suplementação</span>
+      <h2>Suplementos e bebidas</h2>
+      <p class="subtitle">Pra avaliar uso atual e necessidades.</p>
+      
+      <div class="field-group">
+        <label>Usa algum suplemento atualmente?</label>
+        <div class="chips" data-multi="q_suplementos">
+          <div class="chip" data-value="Whey Protein">💪 Whey</div>
+          <div class="chip" data-value="Creatina">⚡ Creatina</div>
+          <div class="chip" data-value="BCAA">🧬 BCAA</div>
+          <div class="chip" data-value="Glutamina">🔬 Glutamina</div>
+          <div class="chip" data-value="Pré-treino">🚀 Pré-treino</div>
+          <div class="chip" data-value="Termogênico">🔥 Termogênico</div>
+          <div class="chip" data-value="Multivitamínico">💊 Multivitamínico</div>
+          <div class="chip" data-value="Ômega 3">🐟 Ômega 3</div>
+          <div class="chip" data-value="Vitamina D">☀️ Vit D</div>
+          <div class="chip" data-value="Colágeno">✨ Colágeno</div>
+          <div class="chip" data-value="Nenhum">✅ Nenhum</div>
+        </div>
+      </div>
+      
+      <div class="field-group">
+        <label>Outros suplementos não listados acima?</label>
+        <input type="text" id="q_supOutros" placeholder="Ex: Magnésio, melatonina, ZMA...">
+      </div>
+      
+      <div class="field-group">
+        <label>Consome bebidas alcoólicas?</label>
+        <div class="chips" data-single="q_alcool">
+          <div class="chip" data-value="Não consumo">Não consumo</div>
+          <div class="chip" data-value="Raramente (1x/mês)">Raramente</div>
+          <div class="chip" data-value="Socialmente (1-2x/semana)">Socialmente</div>
+          <div class="chip" data-value="Frequente (3+ x/semana)">Frequente</div>
+        </div>
+      </div>
+      
+      <div class="field-group">
+        <label>Consome café, refrigerante ou energético?</label>
+        <textarea id="q_cafeRefri" rows="2" placeholder="Ex: 2 xícaras de café pela manhã, 1 lata de refri no almoço..."></textarea>
+      </div>
+      
+      <div class="field-group">
+        <label>Você fuma?</label>
+        <div class="chips" data-single="q_fuma">
+          <div class="chip" data-value="Não">Não</div>
+          <div class="chip" data-value="Ex-fumante">Ex-fumante</div>
+          <div class="chip" data-value="Sim, ocasionalmente">Ocasionalmente</div>
+          <div class="chip" data-value="Sim, diariamente">Diariamente</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ========== STEP 10: SONO E ESTRESSE ========== -->
+    <div class="step" data-step="10">
+      <span class="section-label">10 · Sono e estresse</span>
+      <h2>Recuperação e bem-estar</h2>
+      <p class="subtitle">Sono e estresse impactam diretamente no resultado.</p>
+      
+      <div class="field-group">
+        <label>Quantas horas você dorme por noite (em média)? <span class="req">*</span></label>
+        <div class="chips" data-single="q_horasSono">
+          <div class="chip" data-value="Menos de 5h">< 5h</div>
+          <div class="chip" data-value="5-6h">5-6h</div>
+          <div class="chip" data-value="6-7h">6-7h</div>
+          <div class="chip" data-value="7-8h">7-8h</div>
+          <div class="chip" data-value="Mais de 8h">+ 8h</div>
+        </div>
+      </div>
+      
+      <div class="field-group">
+        <label>Como é a qualidade do seu sono?</label>
+        <div class="scale" data-single="q_qualidadeSono">
+          <div class="scale-item" data-value="1">1</div>
+          <div class="scale-item" data-value="2">2</div>
+          <div class="scale-item" data-value="3">3</div>
+          <div class="scale-item" data-value="4">4</div>
+          <div class="scale-item" data-value="5">5</div>
+        </div>
+        <div class="scale-labels">
+          <span>😴 Péssima</span>
+          <span>Excelente 🌟</span>
+        </div>
+      </div>
+      
+      <div class="field-group">
+        <label>Qual seu nível de estresse hoje?</label>
+        <div class="scale" data-single="q_estresse">
+          <div class="scale-item" data-value="1">1</div>
+          <div class="scale-item" data-value="2">2</div>
+          <div class="scale-item" data-value="3">3</div>
+          <div class="scale-item" data-value="4">4</div>
+          <div class="scale-item" data-value="5">5</div>
+        </div>
+        <div class="scale-labels">
+          <span>😌 Tranquilo</span>
+          <span>😰 Muito estressado</span>
+        </div>
+      </div>
+      
+      <div class="field-group">
+        <label>Como é sua rotina diária? (intensa, calma, sedentária, ativa)</label>
+        <div class="chips" data-single="q_rotina">
+          <div class="chip" data-value="Muito sedentária (escritório o dia todo)">🪑 Sedentária</div>
+          <div class="chip" data-value="Pouco ativa (algumas caminhadas)">🚶 Pouco ativa</div>
+          <div class="chip" data-value="Moderadamente ativa">🚶‍♀️ Moderada</div>
+          <div class="chip" data-value="Muito ativa (trabalho físico, muitos passos)">🏃 Muito ativa</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ========== STEP 11: OBSERVAÇÕES FINAIS ========== -->
+    <div class="step" data-step="11">
+      <span class="section-label">11 · Observações</span>
+      <h2>Quase lá! 🎯</h2>
+      <p class="subtitle">Tem algo mais que eu deveria saber?</p>
+      
+      <div class="field-group">
+        <label>Conte qualquer coisa importante que não foi perguntada</label>
+        <textarea id="q_observacoes" rows="5" placeholder="Ex: Já fiz dieta cetogênica, tenho ansiedade alimentar, preciso de um plano flexível pelas viagens de trabalho..."></textarea>
+      </div>
+      
+      <div class="field-group">
+        <label>Por onde você nos conheceu?</label>
+        <div class="chips" data-single="q_origem">
+          <div class="chip" data-value="Instagram">📷 Instagram</div>
+          <div class="chip" data-value="Indicação">👥 Indicação</div>
+          <div class="chip" data-value="Google">🔍 Google</div>
+          <div class="chip" data-value="WhatsApp">💬 WhatsApp</div>
+          <div class="chip" data-value="Outro">Outro</div>
+        </div>
+      </div>
+      
+      <div class="field-group" style="background: rgba(255,107,26,.08); border: 1px solid rgba(255,107,26,.3); border-radius: 12px; padding: 16px; margin-top: 24px;">
+        <label style="color: var(--orange); font-size: 0.9rem; margin-bottom: 8px;">📌 Importante</label>
+        <p style="font-size: 0.85rem; color: var(--text-2); line-height: 1.5; margin: 0;">
+          Ao enviar esta anamnese, suas respostas serão encaminhadas via WhatsApp para o coach <strong>Matheus</strong>, que entrará em contato em até 24h para iniciar a montagem do seu plano personalizado.
+        </p>
+      </div>
+    </div>
+    
+    <!-- ========== TELA FINAL: SUCESSO ========== -->
+    <div class="step" data-step="12">
+      <div class="success">
+        <div class="check-circle">
+          <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        </div>
+        <h2 id="successTitle">Tudo pronto!</h2>
+        <p id="successText">Sua anamnese está completa. Clique no botão abaixo para enviar suas respostas direto para o coach via WhatsApp.</p>
+        
+        <div class="summary-card" id="summaryCard"></div>
+        
+        <button class="btn btn-whatsapp" id="btnEnviarWA" style="margin-top: 20px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+          Enviar para o Coach via WhatsApp
+        </button>
+        
+        <button class="btn btn-secondary" id="btnReiniciar" style="margin-top: 12px; max-width: none; background: transparent;">
+          Refazer anamnese
+        </button>
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- Navegação -->
+  <div class="nav-buttons" id="navButtons">
+    <div class="inner">
+      <button class="btn btn-secondary" id="btnVoltar" style="display:none;">
+        ← Voltar
+      </button>
+      <button class="btn btn-primary" id="btnAvancar">
+        Começar →
+      </button>
+    </div>
+  </div>
+  
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const WHATSAPP_COACH = '5571992241609'; // Coach Matheus
+const STORAGE_KEY = 'mgcoach_anamnese_draft';
+const TOTAL_STEPS = 11; // Sem contar boas-vindas (0) e sucesso (12)
+
+// ============================================================
+// ESTADO
+// ============================================================
+let currentStep = 0;
+const respostas = {};
+
+// ============================================================
+// HELPERS
+// ============================================================
+function $(id) { return document.getElementById(id); }
+function $$(sel) { return document.querySelectorAll(sel); }
+
+function toast(msg, durMs = 2500) {
+  const el = $('toast');
+  el.textContent = msg;
+  el.style.display = 'block';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.style.display = 'none', durMs);
+}
+
+function salvarRascunho() {
+  try {
+    coletarRespostasParciais();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ step: currentStep, respostas }));
+  } catch (e) { /* ignora */ }
+}
+
+function carregarRascunho() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) { return null; }
+}
+
+function limparRascunho() {
+  try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+}
+
+// ============================================================
+// CHIPS E CARDS - SELEÇÃO
+// ============================================================
+function initChipsAndCards() {
+  // Chips single
+  $$('[data-single]').forEach(group => {
+    const key = group.dataset.single;
+    group.querySelectorAll('.chip, .option-card, .scale-item').forEach(chip => {
+      chip.addEventListener('click', () => {
+        group.querySelectorAll('.chip, .option-card, .scale-item').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+        respostas[key] = chip.dataset.value;
+        salvarRascunho();
+        handleDependencies(key, chip.dataset.value);
+      });
+    });
+  });
+  
+  // Chips multi
+  $$('[data-multi]').forEach(group => {
+    const key = group.dataset.multi;
+    if (!respostas[key]) respostas[key] = [];
+    group.querySelectorAll('.chip, .option-card').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const valor = chip.dataset.value;
+        // Tratamento especial "Nenhuma/Nenhum": desmarca tudo se selecionado
+        if (valor === 'Nenhuma' || valor === 'Nenhum') {
+          group.querySelectorAll('.chip, .option-card').forEach(c => c.classList.remove('selected'));
+          chip.classList.add('selected');
+          respostas[key] = [valor];
+        } else {
+          // Tira o "Nenhuma" se estiver marcado
+          const nenhum = Array.from(group.querySelectorAll('.chip, .option-card')).find(c => 
+            c.dataset.value === 'Nenhuma' || c.dataset.value === 'Nenhum');
+          if (nenhum) nenhum.classList.remove('selected');
+          
+          chip.classList.toggle('selected');
+          if (chip.classList.contains('selected')) {
+            if (!respostas[key].includes(valor)) respostas[key].push(valor);
+            // Remove "Nenhuma" da resposta
+            respostas[key] = respostas[key].filter(v => v !== 'Nenhuma' && v !== 'Nenhum');
+          } else {
+            respostas[key] = respostas[key].filter(v => v !== valor);
+          }
+        }
+        salvarRascunho();
+      });
+    });
+  });
+}
+
+// ============================================================
+// DEPENDÊNCIAS - Mostra/esconde campos condicionais
+// ============================================================
+function handleDependencies(key, value) {
+  // Local de treino
+  if (key === 'q_localTreino') {
+    $('grupoAcademiaRede').style.display = value === 'Academia de rede' ? 'block' : 'none';
+    $('grupoEquipCasa').style.display = (value === 'Em casa' || value === 'Ao ar livre') ? 'block' : 'none';
+  }
+  // Rede de academia "Outra"
+  if (key === 'q_redeAcademia') {
+    $('grupoOutraRede').style.display = value === 'Outra' ? 'block' : 'none';
+  }
+  // Lesão atual
+  if (key === 'q_lesaoAtual') {
+    $('grupoLesaoDesc').style.display = value === 'Sim' ? 'block' : 'none';
+  }
+}
+
+// ============================================================
+// COLETA DE RESPOSTAS
+// ============================================================
+function coletarRespostasParciais() {
+  // Inputs e selects e textareas
+  $$('input, textarea, select').forEach(el => {
+    if (el.id && el.id.startsWith('q_')) {
+      if (el.value !== '') respostas[el.id] = el.value;
+    }
+  });
+  
+  // Mostra/esconde grupo gestação dependendo do sexo
+  const sexo = respostas['q_sexo'];
+  const grupoGrav = $('grupoGravidez');
+  if (grupoGrav) {
+    grupoGrav.style.display = sexo === 'Feminino' ? 'block' : 'none';
+  }
+}
+
+// ============================================================
+// NAVEGAÇÃO
+// ============================================================
+function navegar(direcao) {
+  if (direcao === 'next') {
+    if (!validarStep(currentStep)) return;
+    coletarRespostasParciais();
+    if (currentStep < 12) currentStep++;
+  } else if (direcao === 'prev') {
+    if (currentStep > 0) currentStep--;
+  }
+  
+  renderStep();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  salvarRascunho();
+}
+
+function renderStep() {
+  $$('.step').forEach(s => s.classList.remove('active'));
+  const step = document.querySelector(`[data-step="${currentStep}"]`);
+  if (step) step.classList.add('active');
+  
+  // Atualiza progresso
+  const pct = (currentStep / TOTAL_STEPS) * 100;
+  $('progressFill').style.width = Math.min(100, pct) + '%';
+  
+  // Atualiza contador
+  const counter = $('stepCounter');
+  if (currentStep === 0) counter.textContent = 'Início';
+  else if (currentStep === 12) counter.textContent = '✓ Concluído';
+  else counter.textContent = `${currentStep}/${TOTAL_STEPS}`;
+  
+  // Atualiza botões
+  const btnVoltar = $('btnVoltar');
+  const btnAvancar = $('btnAvancar');
+  const navBtns = $('navButtons');
+  
+  if (currentStep === 0) {
+    btnVoltar.style.display = 'none';
+    btnAvancar.textContent = 'Começar →';
+    btnAvancar.style.display = 'inline-flex';
+    navBtns.style.display = 'block';
+  } else if (currentStep === 12) {
+    navBtns.style.display = 'none';
+    construirResumoFinal();
+  } else if (currentStep === TOTAL_STEPS) {
+    btnVoltar.style.display = 'inline-flex';
+    btnAvancar.textContent = 'Finalizar →';
+    btnAvancar.style.display = 'inline-flex';
+    navBtns.style.display = 'block';
+  } else {
+    btnVoltar.style.display = 'inline-flex';
+    btnAvancar.textContent = 'Próximo →';
+    btnAvancar.style.display = 'inline-flex';
+    navBtns.style.display = 'block';
+  }
+  
+  // Re-aplica dependências do estado atual
+  if (currentStep === 1) {
+    coletarRespostasParciais(); // pra disparar gestante se já marcou sexo
+  }
+}
+
+// ============================================================
+// VALIDAÇÃO
+// ============================================================
+function validarStep(step) {
+  const stepEl = document.querySelector(`[data-step="${step}"]`);
+  if (!stepEl) return true;
+  
+  let valido = true;
+  let primeiroErro = null;
+  
+  // Limpa erros visuais
+  stepEl.querySelectorAll('.field-group.error').forEach(g => g.classList.remove('error'));
+  
+  // Valida campos obrigatórios em inputs
+  stepEl.querySelectorAll('.field-group[data-required]').forEach(group => {
+    const input = group.querySelector('input, textarea, select');
+    if (input && !input.value.trim()) {
+      group.classList.add('error');
+      valido = false;
+      if (!primeiroErro) primeiroErro = input;
+    }
+  });
+  
+  // Step 1: WhatsApp - validação suave
+  if (step === 1) {
+    const wa = $('q_whatsapp');
+    if (wa && wa.value) {
+      const numeros = wa.value.replace(/\D/g, '');
+      if (numeros.length < 10) {
+        wa.closest('.field-group').classList.add('error');
+        wa.closest('.field-group').querySelector('.error-msg').textContent = 'WhatsApp deve ter DDD + número';
+        valido = false;
+        if (!primeiroErro) primeiroErro = wa;
+      }
+    }
+  }
+  
+  // Validações específicas de chips obrigatórios
+  const validacoesChip = {
+    2: { keys: ['q_objetivo'], msg: 'Selecione um objetivo' },
+    3: { keys: ['q_diasSemana', 'q_horarios'], msg: 'Preencha disponibilidade' },
+    4: { keys: ['q_localTreino'], msg: 'Selecione onde você treina' },
+    5: { keys: ['q_nivelExp'], msg: 'Selecione seu nível' },
+    6: { keys: ['q_lesaoAtual'], msg: 'Informe sobre lesões' },
+    7: { keys: ['q_numRefeicoes'], msg: 'Informe número de refeições' },
+    10: { keys: ['q_horasSono'], msg: 'Informe horas de sono' }
+  };
+  
+  if (validacoesChip[step]) {
+    for (const k of validacoesChip[step].keys) {
+      const valor = respostas[k];
+      if (!valor || (Array.isArray(valor) && valor.length === 0)) {
+        valido = false;
+        toast('⚠️ ' + validacoesChip[step].msg);
+        break;
+      }
+    }
+  }
+  
+  if (!valido && primeiroErro) {
+    primeiroErro.focus();
+    primeiroErro.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else if (!valido) {
+    if (!validacoesChip[step]) toast('⚠️ Preencha os campos obrigatórios');
+  }
+  
+  return valido;
+}
+
+// ============================================================
+// CONSTRUIR MENSAGEM WHATSAPP
+// ============================================================
+function construirMensagemWA() {
+  const r = respostas;
+  const nome = r.q_nome || 'Sem nome';
+  const data = new Date().toLocaleDateString('pt-BR');
+  
+  let msg = `🏋️ *ANAMNESE MG COACH*\n_Recebida em ${data}_\n\n`;
+  
+  // 1. Dados pessoais
+  msg += `👤 *DADOS PESSOAIS*\n`;
+  msg += `Nome: ${nome}\n`;
+  if (r.q_idade) msg += `Idade: ${r.q_idade} anos\n`;
+  if (r.q_sexo) msg += `Sexo: ${r.q_sexo}\n`;
+  if (r.q_peso) msg += `Peso: ${r.q_peso} kg\n`;
+  if (r.q_altura) msg += `Altura: ${r.q_altura} cm\n`;
+  if (r.q_peso && r.q_altura) {
+    const imc = (parseFloat(r.q_peso) / Math.pow(parseFloat(r.q_altura) / 100, 2)).toFixed(1);
+    msg += `IMC: ${imc}\n`;
+  }
+  if (r.q_cidade) msg += `Cidade: ${r.q_cidade}\n`;
+  if (r.q_profissao) msg += `Profissão: ${r.q_profissao}\n`;
+  if (r.q_whatsapp) msg += `WhatsApp: ${r.q_whatsapp}\n`;
+  msg += '\n';
+  
+  // 2. Objetivo
+  msg += `🎯 *OBJETIVO*\n`;
+  if (r.q_objetivo) msg += `Principal: ${r.q_objetivo}\n`;
+  if (r.q_objetivoDesc) msg += `Detalhes: ${r.q_objetivoDesc}\n`;
+  if (r.q_prazo) msg += `Prazo: ${r.q_prazo}\n`;
+  msg += '\n';
+  
+  // 3. Disponibilidade
+  msg += `📅 *DISPONIBILIDADE DE TREINO*\n`;
+  if (r.q_diasSemana) msg += `Dias/semana: ${r.q_diasSemana}\n`;
+  if (r.q_horarios && r.q_horarios.length) msg += `Horários: ${r.q_horarios.join(', ')}\n`;
+  if (r.q_tempoSessao) msg += `Tempo por sessão: ${r.q_tempoSessao}\n`;
+  msg += '\n';
+  
+  // 4. Local
+  msg += `🏋️ *LOCAL DE TREINO*\n`;
+  if (r.q_localTreino) msg += `Local: ${r.q_localTreino}\n`;
+  if (r.q_redeAcademia) msg += `Rede: ${r.q_redeAcademia}\n`;
+  if (r.q_nomeAcademia) msg += `Nome academia: ${r.q_nomeAcademia}\n`;
+  if (r.q_equipCasa) msg += `Equipamentos: ${r.q_equipCasa}\n`;
+  msg += '\n';
+  
+  // 5. Experiência
+  msg += `💪 *EXPERIÊNCIA*\n`;
+  if (r.q_nivelExp) msg += `Nível: ${r.q_nivelExp}\n`;
+  if (r.q_modalidades && r.q_modalidades.length) msg += `Modalidades: ${r.q_modalidades.join(', ')}\n`;
+  if (r.q_exerciciosEvitar) msg += `Evita: ${r.q_exerciciosEvitar}\n`;
+  msg += '\n';
+  
+  // 6. Saúde
+  msg += `🏥 *SAÚDE*\n`;
+  if (r.q_lesaoAtual) msg += `Lesão atual: ${r.q_lesaoAtual}\n`;
+  if (r.q_lesaoDesc) msg += `Detalhes lesão: ${r.q_lesaoDesc}\n`;
+  if (r.q_condicoes && r.q_condicoes.length) msg += `Condições: ${r.q_condicoes.join(', ')}\n`;
+  if (r.q_lesaoPassado) msg += `Histórico: ${r.q_lesaoPassado}\n`;
+  if (r.q_medicamentos) msg += `Medicamentos: ${r.q_medicamentos}\n`;
+  if (r.q_gravidez && r.q_gravidez !== 'Não') msg += `Gestação: ${r.q_gravidez}\n`;
+  msg += '\n';
+  
+  // 7. Rotina alimentar
+  msg += `🍽️ *ROTINA ALIMENTAR*\n`;
+  if (r.q_numRefeicoes) msg += `Refeições/dia: ${r.q_numRefeicoes}\n`;
+  if (r.q_horaAcordar) msg += `Acorda: ${r.q_horaAcordar}\n`;
+  if (r.q_horaDormir) msg += `Dorme: ${r.q_horaDormir}\n`;
+  if (r.q_ondeRefeicao && r.q_ondeRefeicao.length) msg += `Onde come: ${r.q_ondeRefeicao.join(', ')}\n`;
+  if (r.q_quemPrepara) msg += `Quem prepara: ${r.q_quemPrepara}\n`;
+  if (r.q_agua) msg += `Água/dia: ${r.q_agua}\n`;
+  msg += '\n';
+  
+  // 8. Preferências
+  msg += `🥗 *PREFERÊNCIAS ALIMENTARES*\n`;
+  if (r.q_alimentosFreq) msg += `Consome com frequência: ${r.q_alimentosFreq}\n`;
+  if (r.q_alimentosNao) msg += `Não consome: ${r.q_alimentosNao}\n`;
+  if (r.q_restricoes && r.q_restricoes.length) msg += `Restrições: ${r.q_restricoes.join(', ')}\n`;
+  if (r.q_alimentosFav) msg += `Favoritos: ${r.q_alimentosFav}\n`;
+  msg += '\n';
+  
+  // 9. Suplementos
+  msg += `💊 *SUPLEMENTAÇÃO E HÁBITOS*\n`;
+  if (r.q_suplementos && r.q_suplementos.length) msg += `Suplementos: ${r.q_suplementos.join(', ')}\n`;
+  if (r.q_supOutros) msg += `Outros: ${r.q_supOutros}\n`;
+  if (r.q_alcool) msg += `Álcool: ${r.q_alcool}\n`;
+  if (r.q_cafeRefri) msg += `Café/refri: ${r.q_cafeRefri}\n`;
+  if (r.q_fuma) msg += `Tabaco: ${r.q_fuma}\n`;
+  msg += '\n';
+  
+  // 10. Sono e estresse
+  msg += `😴 *SONO E ESTRESSE*\n`;
+  if (r.q_horasSono) msg += `Horas de sono: ${r.q_horasSono}\n`;
+  if (r.q_qualidadeSono) msg += `Qualidade do sono: ${r.q_qualidadeSono}/5\n`;
+  if (r.q_estresse) msg += `Nível de estresse: ${r.q_estresse}/5\n`;
+  if (r.q_rotina) msg += `Rotina diária: ${r.q_rotina}\n`;
+  msg += '\n';
+  
+  // 11. Observações
+  if (r.q_observacoes || r.q_origem) {
+    msg += `📝 *OBSERVAÇÕES*\n`;
+    if (r.q_observacoes) msg += `${r.q_observacoes}\n`;
+    if (r.q_origem) msg += `Origem: ${r.q_origem}\n`;
+    msg += '\n';
+  }
+  
+  msg += `_— Enviado via Anamnese MG.COACH_`;
+  return msg;
+}
+
+// ============================================================
+// TELA FINAL
+// ============================================================
+function construirResumoFinal() {
+  const nome = (respostas.q_nome || '').split(' ')[0] || 'paciente';
+  $('successTitle').textContent = `Pronto, ${nome}!`;
+  $('successText').textContent = 'Suas respostas estão prontas. Clique no botão abaixo para enviar via WhatsApp. Em até 24h o coach Matheus retorna o contato.';
+  
+  // Resumo curto
+  const r = respostas;
+  let resumo = '';
+  resumo += `<strong>Resumo enviado:</strong><br><br>`;
+  resumo += `<strong>Nome:</strong> ${r.q_nome || '—'}<br>`;
+  resumo += `<strong>Idade:</strong> ${r.q_idade || '—'} anos<br>`;
+  if (r.q_peso && r.q_altura) {
+    const imc = (parseFloat(r.q_peso) / Math.pow(parseFloat(r.q_altura) / 100, 2)).toFixed(1);
+    resumo += `<strong>Peso/Altura:</strong> ${r.q_peso}kg · ${r.q_altura}cm (IMC ${imc})<br>`;
+  }
+  if (r.q_objetivo) resumo += `<strong>Objetivo:</strong> ${r.q_objetivo}<br>`;
+  if (r.q_diasSemana) resumo += `<strong>Treina:</strong> ${r.q_diasSemana}x/semana<br>`;
+  if (r.q_localTreino) resumo += `<strong>Local:</strong> ${r.q_localTreino}${r.q_redeAcademia ? ' (' + r.q_redeAcademia + ')' : ''}<br>`;
+  if (r.q_nivelExp) resumo += `<strong>Nível:</strong> ${r.q_nivelExp.split(' (')[0]}<br>`;
+  if (r.q_restricoes && r.q_restricoes.length) resumo += `<strong>Restrições:</strong> ${r.q_restricoes.join(', ')}<br>`;
+  $('summaryCard').innerHTML = resumo;
+}
+
+// ============================================================
+// ENVIO WHATSAPP
+// ============================================================
+function enviarWhatsApp() {
+  coletarRespostasParciais();
+  const msg = construirMensagemWA();
+  const encoded = encodeURIComponent(msg);
+  const url = `https://wa.me/${WHATSAPP_COACH}?text=${encoded}`;
+  
+  // Limpa rascunho ao enviar
+  limparRascunho();
+  
+  // Abre WhatsApp
+  window.open(url, '_blank');
+  
+  toast('✅ Abrindo WhatsApp...');
+}
+
+// ============================================================
+// INICIALIZAÇÃO
+// ============================================================
+function init() {
+  initChipsAndCards();
+  
+  $('btnAvancar').addEventListener('click', () => navegar('next'));
+  $('btnVoltar').addEventListener('click', () => navegar('prev'));
+  $('btnEnviarWA').addEventListener('click', enviarWhatsApp);
+  $('btnReiniciar').addEventListener('click', () => {
+    if (confirm('Refazer a anamnese? Suas respostas atuais serão apagadas.')) {
+      limparRascunho();
+      location.reload();
+    }
+  });
+  
+  // Auto-save em inputs
+  $$('input, textarea, select').forEach(el => {
+    el.addEventListener('input', salvarRascunho);
+    el.addEventListener('change', () => {
+      salvarRascunho();
+      // Trigger dependency check on sexo
+      if (el.id === 'q_sexo') {
+        coletarRespostasParciais();
+      }
+    });
+  });
+  
+  // Tentar carregar rascunho
+  const rascunho = carregarRascunho();
+  if (rascunho && rascunho.step > 0 && rascunho.step < 12) {
+    const continuar = confirm('Você tem uma anamnese em andamento. Quer continuar de onde parou?');
+    if (continuar) {
+      Object.assign(respostas, rascunho.respostas || {});
+      // Restaurar valores nos inputs
+      Object.keys(respostas).forEach(key => {
+        const el = $(key);
+        if (el && !Array.isArray(respostas[key])) {
+          el.value = respostas[key];
+        }
+      });
+      // Restaurar chips single
+      $$('[data-single]').forEach(group => {
+        const key = group.dataset.single;
+        const val = respostas[key];
+        if (val) {
+          const chip = Array.from(group.querySelectorAll('.chip, .option-card, .scale-item'))
+            .find(c => c.dataset.value === val);
+          if (chip) chip.classList.add('selected');
+          // Dispara dependência (mostrar campos condicionais)
+          handleDependencies(key, val);
+        }
+      });
+      // Restaurar chips multi
+      $$('[data-multi]').forEach(group => {
+        const key = group.dataset.multi;
+        const vals = respostas[key] || [];
+        vals.forEach(v => {
+          const chip = Array.from(group.querySelectorAll('.chip, .option-card'))
+            .find(c => c.dataset.value === v);
+          if (chip) chip.classList.add('selected');
+        });
+      });
+      currentStep = rascunho.step;
+    } else {
+      limparRascunho();
+    }
+  }
+  
+  renderStep();
+  
+  console.log('✅ Anamnese MG COACH carregada');
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+
+// PWA Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+
+</body>
+</html>
