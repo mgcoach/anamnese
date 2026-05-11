@@ -1217,10 +1217,14 @@ input[type="number"] { -moz-appearance: textfield; }
         
         <button class="btn btn-whatsapp" id="btnEnviarWA" style="margin-top: 20px;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-          Enviar para o Coach via WhatsApp
+          Baixar PDF + Enviar WhatsApp
         </button>
         
-        <button class="btn btn-secondary" id="btnReiniciar" style="margin-top: 12px; max-width: none; background: transparent;">
+        <button class="btn btn-secondary" id="btnSoPDF" style="margin-top: 10px; max-width: none; background: var(--bg-2);">
+          📄 Apenas baixar o PDF
+        </button>
+        
+        <button class="btn btn-secondary" id="btnReiniciar" style="margin-top: 10px; max-width: none; background: transparent;">
           Refazer anamnese
         </button>
       </div>
@@ -1244,6 +1248,9 @@ input[type="number"] { -moz-appearance: textfield; }
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
+
+<!-- jsPDF para geração de PDF -->
+<script src="jspdf.umd.min.js"></script>
 
 <script>
 // ============================================================
@@ -1631,7 +1638,7 @@ function construirMensagemWA() {
 function construirResumoFinal() {
   const nome = (respostas.q_nome || '').split(' ')[0] || 'paciente';
   $('successTitle').textContent = `Pronto, ${nome}!`;
-  $('successText').textContent = 'Suas respostas estão prontas. Clique no botão abaixo para enviar via WhatsApp. Em até 24h o coach Matheus retorna o contato.';
+  $('successText').textContent = 'Ao clicar no botão verde, vai baixar um PDF organizado da sua anamnese e abrir o WhatsApp para você enviar tudo pro coach. Em até 24h o Matheus retorna o contato.';
   
   // Resumo curto
   const r = respostas;
@@ -1652,21 +1659,504 @@ function construirResumoFinal() {
 }
 
 // ============================================================
-// ENVIO WHATSAPP
+// GERAÇÃO DE PDF (visual laranja/preto igual ao app)
+// ============================================================
+
+// Paleta do app — replicada em RGB para o PDF
+const PDF_COLORS = {
+  bg: [10, 10, 10],          // #0a0a0a
+  bg2: [22, 22, 22],         // #161616
+  bg3: [31, 31, 31],         // #1f1f1f
+  border: [42, 42, 42],      // #2a2a2a
+  text: [245, 245, 245],     // #f5f5f5
+  text2: [184, 184, 184],    // #b8b8b8
+  text3: [112, 112, 112],    // #707070
+  orange: [255, 107, 26],    // #ff6b1a
+  orange2: [255, 140, 66],   // #ff8c42
+  orangeFaint: [40, 25, 12]  // laranja bem fraco pro fundo dos blocos
+};
+
+function gerarPDFAnamnese() {
+  if (typeof window.jspdf === 'undefined') {
+    console.error('jsPDF não carregou');
+    return null;
+  }
+  
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+  
+  const PAGE_W = 210;
+  const PAGE_H = 297;
+  const MARGIN = 14;
+  const CONTENT_W = PAGE_W - 2 * MARGIN;
+  
+  let y = 0; // cursor vertical
+  
+  // ----- Helpers -----
+  const setFill = (rgb) => doc.setFillColor(rgb[0], rgb[1], rgb[2]);
+  const setText = (rgb) => doc.setTextColor(rgb[0], rgb[1], rgb[2]);
+  const setDraw = (rgb) => doc.setDrawColor(rgb[0], rgb[1], rgb[2]);
+  
+  // Fundo escuro de página inteira
+  function pintarFundo() {
+    setFill(PDF_COLORS.bg);
+    doc.rect(0, 0, PAGE_W, PAGE_H, 'F');
+  }
+  
+  // Rodapé
+  function rodape(pageNum, totalPages) {
+    const rodapeY = PAGE_H - 8;
+    setText(PDF_COLORS.text3);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.text('MG.COACH · Anamnese', MARGIN, rodapeY);
+    doc.text(`Página ${pageNum}${totalPages ? ' de ' + totalPages : ''}`, PAGE_W - MARGIN, rodapeY, { align: 'right' });
+  }
+  
+  // Verifica se cabe e cria nova página se não
+  function checarEspaco(altura) {
+    if (y + altura > PAGE_H - 18) {
+      novaPagina();
+    }
+  }
+  
+  let paginaAtual = 1;
+  function novaPagina() {
+    rodape(paginaAtual);
+    doc.addPage();
+    paginaAtual++;
+    pintarFundo();
+    y = MARGIN + 4;
+  }
+  
+  // Cabeçalho (1ª página)
+  function desenharCabecalho() {
+    // Faixa laranja no topo
+    setFill(PDF_COLORS.orange);
+    doc.rect(0, 0, PAGE_W, 3, 'F');
+    
+    y = 16;
+    
+    // Logo estrela laranja
+    const logoX = MARGIN;
+    const logoY = y;
+    const logoSize = 14;
+    setFill(PDF_COLORS.orange);
+    doc.roundedRect(logoX, logoY, logoSize, logoSize, 3, 3, 'F');
+    
+    // Estrela vetorial dentro do logo (5 pontas, replicando a do app)
+    const cx = logoX + logoSize / 2;
+    const cy = logoY + logoSize / 2;
+    const rOuter = logoSize * 0.36;
+    const rInner = logoSize * 0.16;
+    setFill([255, 255, 255]);
+    const pts = [];
+    for (let i = 0; i < 10; i++) {
+      const ang = (Math.PI / 2) - (i * Math.PI / 5); // começa no topo
+      const r = i % 2 === 0 ? rOuter : rInner;
+      pts.push([cx + r * Math.cos(ang), cy - r * Math.sin(ang)]);
+    }
+    // Desenhar polígono com lines
+    const lines = [];
+    for (let i = 1; i < pts.length; i++) {
+      lines.push([pts[i][0] - pts[i-1][0], pts[i][1] - pts[i-1][1]]);
+    }
+    doc.lines(lines, pts[0][0], pts[0][1], [1, 1], 'F', true);
+    
+    // MG.COACH
+    setText(PDF_COLORS.text);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(22);
+    const brandY = logoY + 7;
+    doc.text('MG', logoX + logoSize + 5, brandY);
+    const mgW = doc.getTextWidth('MG');
+    setText(PDF_COLORS.orange);
+    doc.text('.', logoX + logoSize + 5 + mgW, brandY);
+    const dotW = doc.getTextWidth('.');
+    setText(PDF_COLORS.text);
+    doc.text('COACH', logoX + logoSize + 5 + mgW + dotW, brandY);
+    
+    // Tagline
+    setText(PDF_COLORS.text3);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.text('TREINO · NUTRIÇÃO · PERFORMANCE', logoX + logoSize + 5, brandY + 4);
+    
+    // Data e título à direita
+    const hoje = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+    setText(PDF_COLORS.text3);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.text('ANAMNESE', PAGE_W - MARGIN, brandY - 3, { align: 'right' });
+    setText(PDF_COLORS.text2);
+    doc.setFontSize(9);
+    doc.text(hoje, PAGE_W - MARGIN, brandY + 2, { align: 'right' });
+    
+    y = logoY + logoSize + 8;
+    
+    // Linha divisória sutil
+    setDraw(PDF_COLORS.border);
+    doc.setLineWidth(0.2);
+    doc.line(MARGIN, y, PAGE_W - MARGIN, y);
+    y += 8;
+  }
+  
+  // Caixa "ficha do paciente" no topo
+  function fichaPaciente(r) {
+    checarEspaco(34);
+    const boxH = 30;
+    setFill(PDF_COLORS.bg2);
+    doc.roundedRect(MARGIN, y, CONTENT_W, boxH, 3, 3, 'F');
+    
+    // Borda laranja sutil à esquerda (acento)
+    setFill(PDF_COLORS.orange);
+    doc.rect(MARGIN, y, 1.5, boxH, 'F');
+    
+    const innerX = MARGIN + 6;
+    let innerY = y + 6;
+    
+    // Nome (destaque)
+    setText(PDF_COLORS.text);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text(r.q_nome || 'Paciente sem nome', innerX, innerY);
+    
+    // Linha de info
+    innerY += 6;
+    setText(PDF_COLORS.text2);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    
+    const infoBits = [];
+    if (r.q_idade) infoBits.push(`${r.q_idade} anos`);
+    if (r.q_sexo) infoBits.push(r.q_sexo);
+    if (r.q_peso) infoBits.push(`${r.q_peso} kg`);
+    if (r.q_altura) infoBits.push(`${r.q_altura} cm`);
+    if (r.q_peso && r.q_altura) {
+      const imc = (parseFloat(r.q_peso) / Math.pow(parseFloat(r.q_altura) / 100, 2)).toFixed(1);
+      infoBits.push(`IMC ${imc}`);
+    }
+    doc.text(infoBits.join('   ·   '), innerX, innerY);
+    
+    // Linha 2
+    innerY += 5;
+    const info2 = [];
+    if (r.q_cidade) info2.push(r.q_cidade);
+    if (r.q_profissao) info2.push(r.q_profissao);
+    if (r.q_whatsapp) info2.push(`WhatsApp: ${r.q_whatsapp}`);
+    if (info2.length) doc.text(info2.join('   ·   '), innerX, innerY);
+    
+    y += boxH + 6;
+  }
+  
+  // Título de seção (com pílula laranja)
+  function tituloSecao(numero, titulo) {
+    checarEspaco(14);
+    
+    // Pílula laranja com número
+    const pillW = 7;
+    const pillH = 5;
+    setFill(PDF_COLORS.orange);
+    doc.roundedRect(MARGIN, y - 3.5, pillW, pillH, 1, 1, 'F');
+    setText([255, 255, 255]);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7);
+    doc.text(String(numero), MARGIN + pillW / 2, y, { align: 'center' });
+    
+    // Título
+    setText(PDF_COLORS.orange);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.text(titulo.toUpperCase(), MARGIN + pillW + 3, y);
+    
+    y += 3;
+    // Linha
+    setDraw(PDF_COLORS.orange);
+    doc.setLineWidth(0.4);
+    doc.line(MARGIN, y, MARGIN + 20, y);
+    setDraw(PDF_COLORS.border);
+    doc.setLineWidth(0.2);
+    doc.line(MARGIN + 20, y, PAGE_W - MARGIN, y);
+    y += 5;
+  }
+  
+  // Linha "Label: valor" (com word-wrap)
+  function linhaInfo(label, valor, opts = {}) {
+    if (valor == null || valor === '' || (Array.isArray(valor) && valor.length === 0)) return;
+    const valStr = Array.isArray(valor) ? valor.join(', ') : String(valor);
+    
+    const labelW = 38;
+    const valW = CONTENT_W - labelW - 2;
+    
+    // Quebra valor em linhas
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    const linhas = doc.splitTextToSize(valStr, valW);
+    const alturaTotal = Math.max(5, linhas.length * 4.2 + 1);
+    
+    checarEspaco(alturaTotal);
+    
+    // Label cinza
+    setText(PDF_COLORS.text3);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.text(label.toUpperCase(), MARGIN, y + 3.2);
+    
+    // Valor
+    setText(PDF_COLORS.text);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    linhas.forEach((linha, i) => {
+      doc.text(linha, MARGIN + labelW, y + 3.2 + i * 4.2);
+    });
+    
+    y += alturaTotal;
+  }
+  
+  // Bloco de texto longo (observações, listas grandes)
+  function blocoTexto(label, texto) {
+    if (!texto || !texto.trim()) return;
+    
+    setText(PDF_COLORS.text3);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    checarEspaco(8);
+    doc.text(label.toUpperCase(), MARGIN, y + 3);
+    y += 5;
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    const linhas = doc.splitTextToSize(texto, CONTENT_W - 4);
+    
+    // Caixa de fundo
+    const boxH = linhas.length * 4.2 + 5;
+    checarEspaco(boxH);
+    setFill(PDF_COLORS.bg2);
+    doc.roundedRect(MARGIN, y, CONTENT_W, boxH, 2, 2, 'F');
+    
+    setText(PDF_COLORS.text);
+    linhas.forEach((linha, i) => {
+      doc.text(linha, MARGIN + 3, y + 4 + i * 4.2);
+    });
+    
+    y += boxH + 3;
+  }
+  
+  // Chips visual (lista de tags)
+  function chipsLinha(label, valores) {
+    if (!valores || (Array.isArray(valores) && valores.length === 0)) return;
+    const lista = Array.isArray(valores) ? valores : [valores];
+    
+    setText(PDF_COLORS.text3);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    checarEspaco(10);
+    doc.text(label.toUpperCase(), MARGIN, y + 3);
+    y += 5;
+    
+    let x = MARGIN;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    const lineH = 6;
+    
+    lista.forEach(v => {
+      const w = doc.getTextWidth(v) + 6;
+      if (x + w > PAGE_W - MARGIN) {
+        x = MARGIN;
+        y += lineH + 1;
+        checarEspaco(lineH + 4);
+      }
+      setFill(PDF_COLORS.bg3);
+      setDraw(PDF_COLORS.orange);
+      doc.setLineWidth(0.2);
+      doc.roundedRect(x, y, w, lineH, 1.5, 1.5, 'FD');
+      setText(PDF_COLORS.text);
+      doc.text(v, x + 3, y + 4);
+      x += w + 2;
+    });
+    y += lineH + 4;
+  }
+  
+  // Quebra um espaço pequeno entre seções
+  function espaco(px = 3) { y += px; }
+  
+  // ============== INICIO RENDERIZAÇÃO ==============
+  pintarFundo();
+  desenharCabecalho();
+  
+  const r = respostas;
+  fichaPaciente(r);
+  
+  // 2 - Objetivo
+  tituloSecao(2, 'Objetivo');
+  linhaInfo('Principal', r.q_objetivo);
+  linhaInfo('Prazo', r.q_prazo);
+  if (r.q_objetivoDesc) blocoTexto('Detalhes do objetivo', r.q_objetivoDesc);
+  espaco();
+  
+  // 3 - Disponibilidade
+  tituloSecao(3, 'Disponibilidade de treino');
+  linhaInfo('Dias/semana', r.q_diasSemana);
+  if (r.q_horarios && r.q_horarios.length) chipsLinha('Horários', r.q_horarios);
+  linhaInfo('Tempo por sessão', r.q_tempoSessao);
+  espaco();
+  
+  // 4 - Local de treino
+  tituloSecao(4, 'Local de treino');
+  linhaInfo('Local', r.q_localTreino);
+  linhaInfo('Rede', r.q_redeAcademia);
+  linhaInfo('Nome da academia', r.q_nomeAcademia);
+  if (r.q_equipCasa) blocoTexto('Equipamentos disponíveis', r.q_equipCasa);
+  espaco();
+  
+  // 5 - Experiência
+  tituloSecao(5, 'Experiência');
+  linhaInfo('Nível', r.q_nivelExp);
+  if (r.q_modalidades && r.q_modalidades.length) chipsLinha('Modalidades praticadas', r.q_modalidades);
+  if (r.q_exerciciosEvitar) blocoTexto('Exercícios a evitar', r.q_exerciciosEvitar);
+  espaco();
+  
+  // 6 - Saúde
+  tituloSecao(6, 'Saúde');
+  linhaInfo('Lesão atual', r.q_lesaoAtual);
+  if (r.q_lesaoDesc) blocoTexto('Detalhes da lesão', r.q_lesaoDesc);
+  if (r.q_condicoes && r.q_condicoes.length) chipsLinha('Condições', r.q_condicoes);
+  if (r.q_lesaoPassado) blocoTexto('Histórico médico', r.q_lesaoPassado);
+  if (r.q_medicamentos) blocoTexto('Medicamentos em uso', r.q_medicamentos);
+  if (r.q_gravidez && r.q_gravidez !== 'Não') linhaInfo('Gestação/Lactação', r.q_gravidez);
+  espaco();
+  
+  // 7 - Rotina alimentar
+  tituloSecao(7, 'Rotina alimentar');
+  linhaInfo('Refeições/dia', r.q_numRefeicoes);
+  if (r.q_horaAcordar || r.q_horaDormir) {
+    const horarios = [];
+    if (r.q_horaAcordar) horarios.push(`Acorda ${r.q_horaAcordar}`);
+    if (r.q_horaDormir) horarios.push(`Dorme ${r.q_horaDormir}`);
+    linhaInfo('Horários', horarios.join(' · '));
+  }
+  if (r.q_ondeRefeicao && r.q_ondeRefeicao.length) chipsLinha('Onde faz as refeições', r.q_ondeRefeicao);
+  linhaInfo('Quem prepara', r.q_quemPrepara);
+  linhaInfo('Água/dia', r.q_agua);
+  espaco();
+  
+  // 8 - Preferências alimentares
+  tituloSecao(8, 'Preferências alimentares');
+  if (r.q_alimentosFreq) blocoTexto('Consome com frequência', r.q_alimentosFreq);
+  if (r.q_alimentosNao) blocoTexto('NÃO consome', r.q_alimentosNao);
+  if (r.q_restricoes && r.q_restricoes.length) chipsLinha('Restrições', r.q_restricoes);
+  if (r.q_alimentosFav) blocoTexto('Favoritos (manter no plano)', r.q_alimentosFav);
+  espaco();
+  
+  // 9 - Suplementação e hábitos
+  tituloSecao(9, 'Suplementação e hábitos');
+  if (r.q_suplementos && r.q_suplementos.length) chipsLinha('Suplementos em uso', r.q_suplementos);
+  linhaInfo('Outros suplementos', r.q_supOutros);
+  linhaInfo('Álcool', r.q_alcool);
+  if (r.q_cafeRefri) blocoTexto('Café / refrigerante / energético', r.q_cafeRefri);
+  linhaInfo('Tabaco', r.q_fuma);
+  espaco();
+  
+  // 10 - Sono e estresse
+  tituloSecao(10, 'Sono e estresse');
+  linhaInfo('Horas de sono', r.q_horasSono);
+  if (r.q_qualidadeSono) linhaInfo('Qualidade do sono', `${r.q_qualidadeSono}/5`);
+  if (r.q_estresse) linhaInfo('Nível de estresse', `${r.q_estresse}/5`);
+  linhaInfo('Rotina diária', r.q_rotina);
+  espaco();
+  
+  // 11 - Observações
+  if (r.q_observacoes || r.q_origem) {
+    tituloSecao(11, 'Observações finais');
+    if (r.q_observacoes) blocoTexto('Observações do paciente', r.q_observacoes);
+    linhaInfo('Conheceu por', r.q_origem);
+    espaco();
+  }
+  
+  // Rodapé final
+  rodape(paginaAtual);
+  
+  // Adicionar contagem total de páginas em todos rodapés
+  const total = paginaAtual;
+  for (let i = 1; i <= total; i++) {
+    doc.setPage(i);
+    setFill(PDF_COLORS.bg);
+    doc.rect(0, PAGE_H - 12, PAGE_W, 12, 'F');
+    setText(PDF_COLORS.text3);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.text('MG.COACH · Anamnese', MARGIN, PAGE_H - 6);
+    doc.text(`Página ${i} de ${total}`, PAGE_W - MARGIN, PAGE_H - 6, { align: 'right' });
+  }
+  
+  return doc;
+}
+
+function nomeArquivoPDF() {
+  const nome = (respostas.q_nome || 'anamnese').trim().split(' ').slice(0, 2).join('_')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9_]/g, '');
+  const data = new Date().toISOString().split('T')[0];
+  return `anamnese_${nome || 'paciente'}_${data}.pdf`;
+}
+
+// ============================================================
+// ENVIO: PDF + WHATSAPP (Opção C)
 // ============================================================
 function enviarWhatsApp() {
   coletarRespostasParciais();
-  const msg = construirMensagemWA();
+  
+  let pdfBaixado = false;
+  
+  // 1. Gerar e baixar PDF
+  try {
+    const pdf = gerarPDFAnamnese();
+    if (pdf) {
+      pdf.save(nomeArquivoPDF());
+      pdfBaixado = true;
+    } else {
+      throw new Error('jsPDF não carregou');
+    }
+  } catch (e) {
+    console.error('Erro ao gerar PDF:', e);
+    toast('⚠️ Não consegui gerar o PDF, mas vou abrir o WhatsApp com a anamnese em texto', 4000);
+  }
+  
+  // 2. Montar mensagem do WhatsApp (com nota sobre o anexo)
+  let msg = construirMensagemWA();
+  if (pdfBaixado) {
+    msg += `\n\n📎 *PDF da anamnese baixado no seu celular* — anexe junto com esta mensagem (toque no clipe 📎 no WhatsApp).`;
+  }
+  
+  // 3. Abrir WhatsApp
   const encoded = encodeURIComponent(msg);
   const url = `https://wa.me/${WHATSAPP_COACH}?text=${encoded}`;
   
-  // Limpa rascunho ao enviar
+  // Limpa rascunho
   limparRascunho();
   
-  // Abre WhatsApp
-  window.open(url, '_blank');
-  
-  toast('✅ Abrindo WhatsApp...');
+  // Pequeno delay pro download terminar antes de mudar de aba
+  setTimeout(() => {
+    window.open(url, '_blank');
+    if (pdfBaixado) {
+      toast('✅ PDF baixado! Abrindo WhatsApp...', 4000);
+    } else {
+      toast('✅ Abrindo WhatsApp...');
+    }
+  }, 600);
+}
+
+function baixarSomentePDF() {
+  coletarRespostasParciais();
+  try {
+    const pdf = gerarPDFAnamnese();
+    if (pdf) {
+      pdf.save(nomeArquivoPDF());
+      toast('✅ PDF baixado!');
+    }
+  } catch (e) {
+    console.error(e);
+    toast('⚠️ Erro ao gerar PDF: ' + e.message, 4000);
+  }
 }
 
 // ============================================================
@@ -1678,6 +2168,7 @@ function init() {
   $('btnAvancar').addEventListener('click', () => navegar('next'));
   $('btnVoltar').addEventListener('click', () => navegar('prev'));
   $('btnEnviarWA').addEventListener('click', enviarWhatsApp);
+  $('btnSoPDF').addEventListener('click', baixarSomentePDF);
   $('btnReiniciar').addEventListener('click', () => {
     if (confirm('Refazer a anamnese? Suas respostas atuais serão apagadas.')) {
       limparRascunho();
