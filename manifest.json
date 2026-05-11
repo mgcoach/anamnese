@@ -1,0 +1,23 @@
+{
+  "name": "Anamnese MG COACH",
+  "short_name": "MG Anamnese",
+  "description": "Anamnese interativa MG COACH — Treino e Nutrição",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "orientation": "portrait",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjMGEwYTBhIi8+PHBhdGggZD0iTTEyIDJMMTMuNSA4TDIwIDlMMTUgMTMuNUwxNi41IDIwTDEyIDE2LjVMNy41IDIwTDkgMTMuNUw0IDlMMTAuNSA4TDEyIDJaIiBmaWxsPSIjZmY2YjFhIi8+PC9zdmc+",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjMGEwYTBhIi8+PHBhdGggZD0iTTEyIDJMMTMuNSA4TDIwIDlMMTUgMTMuNUwxNi41IDIwTDEyIDE2LjVMNy41IDIwTDkgMTMuNUw0IDlMMTAuNSA4TDEyIDJaIiBmaWxsPSIjZmY2YjFhIi8+PC9zdmc+",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
