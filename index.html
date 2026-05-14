@@ -2100,49 +2100,301 @@ function nomeArquivoPDF() {
 }
 
 // ============================================================
-// ENVIO: PDF + WHATSAPP (Opção C)
+// DETECÇÃO DE AMBIENTE
 // ============================================================
-function enviarWhatsApp() {
+function detectarAmbiente() {
+  const ua = navigator.userAgent || '';
+  const uaLower = ua.toLowerCase();
+  
+  // In-app browser do Instagram/Facebook (não permite window.open)
+  const isInstagram = uaLower.includes('instagram');
+  const isFacebook = uaLower.includes('fbav') || uaLower.includes('fban');
+  const isTiktok = uaLower.includes('musical_ly') || uaLower.includes('bytedance');
+  const isInApp = isInstagram || isFacebook || isTiktok;
+  
+  // Mobile
+  const isMobile = /android|iphone|ipod|ipad/i.test(uaLower) || 
+                   (navigator.maxTouchPoints > 0 && /mobi/i.test(uaLower));
+  
+  // iOS
+  const isIOS = /iphone|ipad|ipod/i.test(uaLower);
+  
+  // Suporte a Web Share API com arquivos
+  let suportaShareComArquivos = false;
+  try {
+    if (navigator.canShare && navigator.share) {
+      // Testar com um arquivo dummy de PDF
+      const arquivoTeste = new File(['teste'], 'teste.pdf', { type: 'application/pdf' });
+      suportaShareComArquivos = navigator.canShare({ files: [arquivoTeste] });
+    }
+  } catch (e) {
+    suportaShareComArquivos = false;
+  }
+  
+  return {
+    isInApp,
+    isInstagram,
+    isFacebook,
+    isMobile,
+    isIOS,
+    suportaShareComArquivos,
+    nomeApp: isInstagram ? 'Instagram' : (isFacebook ? 'Facebook' : (isTiktok ? 'TikTok' : ''))
+  };
+}
+
+// ============================================================
+// GERAR BLOB DO PDF (sem baixar) - pra usar no Web Share
+// ============================================================
+function gerarBlobPDF() {
+  const pdf = gerarPDFAnamnese();
+  if (!pdf) return null;
+  return pdf.output('blob');
+}
+
+// ============================================================
+// COPIAR PARA ÁREA DE TRANSFERÊNCIA
+// ============================================================
+async function copiarTexto(texto) {
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(texto);
+      return true;
+    }
+  } catch (e) { /* fallback abaixo */ }
+  
+  // Fallback antigo
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = texto;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    const sucesso = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return sucesso;
+  } catch (e) {
+    return false;
+  }
+}
+
+// ============================================================
+// MODAL DE INSTRUÇÕES (FALLBACK)
+// ============================================================
+function mostrarModalInstrucoes(opts) {
+  // Remove modal anterior se existir
+  const antigo = document.getElementById('modalInstrucoes');
+  if (antigo) antigo.remove();
+  
+  const isInApp = opts.isInApp;
+  const nomeApp = opts.nomeApp || '';
+  const linkWA = opts.linkWA;
+  const linkAnamnese = window.location.href;
+  
+  const modal = document.createElement('div');
+  modal.id = 'modalInstrucoes';
+  modal.style.cssText = `
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,.85); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; animation: fadeIn 0.25s;
+  `;
+  
+  let conteudo = '';
+  
+  if (isInApp) {
+    // Dentro do Instagram/Facebook - precisa abrir externamente
+    conteudo = `
+      <div style="background:var(--bg-2);border:1px solid var(--orange);border-radius:16px;padding:24px;max-width:420px;width:100%;max-height:90vh;overflow-y:auto;">
+        <div style="text-align:center;margin-bottom:16px;">
+          <div style="font-size:3rem;">⚠️</div>
+          <h3 style="color:var(--orange);margin:8px 0;font-size:1.2rem;">Você está no navegador do ${nomeApp}</h3>
+          <p style="color:var(--text-2);font-size:0.9rem;line-height:1.5;">Esse navegador interno bloqueia o envio do PDF para o WhatsApp. Pra continuar, abra a anamnese no navegador do seu celular:</p>
+        </div>
+        
+        <div style="background:var(--bg-3);border-radius:10px;padding:14px;margin:16px 0;border:1px solid var(--border);">
+          <div style="font-weight:700;color:var(--orange);font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">📲 Como abrir externamente:</div>
+          <ol style="color:var(--text);font-size:0.9rem;line-height:1.7;padding-left:20px;margin:0;">
+            <li>Toque nos <strong>3 pontinhos (⋯)</strong> no canto superior direito</li>
+            <li>Escolha <strong>"Abrir no navegador"</strong> ou <strong>"Abrir no Chrome / Safari"</strong></li>
+            <li>Suas respostas serão preservadas — basta continuar de onde parou</li>
+          </ol>
+        </div>
+        
+        <button onclick="copiarLinkAnamnese()" style="width:100%;background:var(--bg-3);color:var(--text);border:1px solid var(--border);padding:12px;border-radius:10px;font-weight:600;font-size:0.9rem;cursor:pointer;margin-bottom:8px;">
+          🔗 Copiar link da anamnese
+        </button>
+        
+        <button onclick="fecharModalInstrucoes()" style="width:100%;background:transparent;color:var(--text-3);border:none;padding:10px;font-size:0.85rem;cursor:pointer;">
+          Fechar
+        </button>
+      </div>
+    `;
+  } else {
+    // Mobile sem Web Share OU desktop - PDF baixado, precisa anexar manualmente
+    conteudo = `
+      <div style="background:var(--bg-2);border:1px solid var(--orange);border-radius:16px;padding:24px;max-width:420px;width:100%;max-height:90vh;overflow-y:auto;">
+        <div style="text-align:center;margin-bottom:16px;">
+          <div style="font-size:3rem;">✅</div>
+          <h3 style="color:var(--orange);margin:8px 0;font-size:1.2rem;">PDF baixado com sucesso!</h3>
+          <p style="color:var(--text-2);font-size:0.9rem;line-height:1.5;">Agora é só enviar pro coach. Siga estes 2 passos:</p>
+        </div>
+        
+        <div style="background:var(--bg-3);border-radius:10px;padding:14px;margin:16px 0;border:1px solid var(--border);">
+          <div style="font-weight:700;color:var(--orange);font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">📋 Passo a passo:</div>
+          <div style="color:var(--text);font-size:0.9rem;line-height:1.6;">
+            <div style="margin-bottom:10px;display:flex;gap:8px;">
+              <span style="background:var(--orange);color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;">1</span>
+              <span>Toque em <strong style="color:#25D366">"Abrir WhatsApp"</strong> abaixo — vai abrir já com a mensagem pronta</span>
+            </div>
+            <div style="margin-bottom:10px;display:flex;gap:8px;">
+              <span style="background:var(--orange);color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;">2</span>
+              <span>No WhatsApp, toque no <strong>clipe 📎</strong>, escolha <strong>"Documento"</strong> e selecione o arquivo PDF que acabou de baixar</span>
+            </div>
+          </div>
+        </div>
+        
+        <a href="${linkWA}" target="_blank" rel="noopener" onclick="setTimeout(()=>fecharModalInstrucoes(),300)" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;padding:14px;border-radius:10px;font-weight:700;font-size:1rem;cursor:pointer;margin-bottom:8px;text-decoration:none;box-shadow:0 4px 14px rgba(37,211,102,.4);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884"/></svg>
+          Abrir WhatsApp
+        </a>
+        
+        <button onclick="baixarPDFNovamente()" style="width:100%;background:var(--bg-3);color:var(--text);border:1px solid var(--border);padding:11px;border-radius:10px;font-weight:600;font-size:0.85rem;cursor:pointer;margin-bottom:8px;">
+          📄 Baixar PDF de novo
+        </button>
+        
+        <button onclick="fecharModalInstrucoes()" style="width:100%;background:transparent;color:var(--text-3);border:none;padding:10px;font-size:0.85rem;cursor:pointer;">
+          Já enviei, fechar
+        </button>
+      </div>
+    `;
+  }
+  
+  modal.innerHTML = conteudo;
+  document.body.appendChild(modal);
+  
+  // Fecha ao clicar fora
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) fecharModalInstrucoes();
+  });
+}
+
+function fecharModalInstrucoes() {
+  const modal = document.getElementById('modalInstrucoes');
+  if (modal) modal.remove();
+}
+
+async function copiarLinkAnamnese() {
+  const link = window.location.href;
+  const ok = await copiarTexto(link);
+  if (ok) toast('✅ Link copiado! Cole no navegador externo');
+  else toast('⚠️ Não consegui copiar. Copie da barra de endereço.', 4000);
+}
+
+function baixarPDFNovamente() {
+  try {
+    const pdf = gerarPDFAnamnese();
+    if (pdf) {
+      pdf.save(nomeArquivoPDF());
+      toast('✅ PDF baixado novamente');
+    }
+  } catch(e) { 
+    toast('⚠️ Erro: ' + e.message, 4000); 
+  }
+}
+
+// Expor pro escopo global (são chamadas pelos onclick do HTML do modal)
+window.fecharModalInstrucoes = fecharModalInstrucoes;
+window.copiarLinkAnamnese = copiarLinkAnamnese;
+window.baixarPDFNovamente = baixarPDFNovamente;
+
+// ============================================================
+// ENVIO PRINCIPAL — DETECÇÃO AUTOMÁTICA (Opção C)
+// ============================================================
+async function enviarWhatsApp() {
   coletarRespostasParciais();
   
-  let pdfBaixado = false;
+  const ambiente = detectarAmbiente();
+  const msg = construirMensagemWA();
+  const encoded = encodeURIComponent(msg);
+  const linkWA = `https://wa.me/${WHATSAPP_COACH}?text=${encoded}`;
   
-  // 1. Gerar e baixar PDF
+  console.log('Ambiente detectado:', ambiente);
+  
+  // CAMINHO 1: Navegador in-app do Instagram/Facebook — mostra instrução pra abrir externamente
+  if (ambiente.isInApp) {
+    mostrarModalInstrucoes({ isInApp: true, nomeApp: ambiente.nomeApp, linkWA });
+    return;
+  }
+  
+  // CAMINHO 2: Mobile com Web Share API (caminho preferido — anexa PDF E texto)
+  if (ambiente.suportaShareComArquivos) {
+    try {
+      const blob = gerarBlobPDF();
+      if (!blob) throw new Error('Falha ao gerar PDF');
+      
+      const arquivo = new File([blob], nomeArquivoPDF(), { type: 'application/pdf' });
+      
+      // Tenta compartilhar com arquivo + texto
+      const dadosShare = {
+        files: [arquivo],
+        title: 'Anamnese MG.COACH',
+        text: msg
+      };
+      
+      if (navigator.canShare(dadosShare)) {
+        try {
+          await navigator.share(dadosShare);
+          limparRascunho();
+          toast('✅ Anamnese enviada!', 3500);
+          return;
+        } catch (errShare) {
+          // Usuário cancelou ou erro — não trata como erro fatal
+          if (errShare.name === 'AbortError') {
+            console.log('Usuário cancelou o share');
+            return;
+          }
+          console.warn('Share falhou, caindo no fallback:', errShare);
+          // continua pro fallback
+        }
+      }
+    } catch (e) {
+      console.error('Erro no Web Share:', e);
+      // continua pro fallback
+    }
+  }
+  
+  // CAMINHO 3: Desktop ou fallback — baixa PDF + abre WhatsApp + mostra instruções
+  let pdfBaixado = false;
   try {
     const pdf = gerarPDFAnamnese();
     if (pdf) {
       pdf.save(nomeArquivoPDF());
       pdfBaixado = true;
-    } else {
-      throw new Error('jsPDF não carregou');
     }
   } catch (e) {
     console.error('Erro ao gerar PDF:', e);
-    toast('⚠️ Não consegui gerar o PDF, mas vou abrir o WhatsApp com a anamnese em texto', 4000);
+    toast('⚠️ Erro ao gerar PDF — vou abrir o WhatsApp só com texto', 4000);
   }
   
-  // 2. Montar mensagem do WhatsApp (com nota sobre o anexo)
-  let msg = construirMensagemWA();
-  if (pdfBaixado) {
-    msg += `\n\n📎 *PDF da anamnese baixado no seu celular* — anexe junto com esta mensagem (toque no clipe 📎 no WhatsApp).`;
-  }
-  
-  // 3. Abrir WhatsApp
-  const encoded = encodeURIComponent(msg);
-  const url = `https://wa.me/${WHATSAPP_COACH}?text=${encoded}`;
-  
-  // Limpa rascunho
   limparRascunho();
   
-  // Pequeno delay pro download terminar antes de mudar de aba
-  setTimeout(() => {
-    window.open(url, '_blank');
-    if (pdfBaixado) {
-      toast('✅ PDF baixado! Abrindo WhatsApp...', 4000);
-    } else {
-      toast('✅ Abrindo WhatsApp...');
-    }
-  }, 600);
+  if (ambiente.isMobile && pdfBaixado) {
+    // Mobile sem Web Share: modal com instruções
+    setTimeout(() => {
+      mostrarModalInstrucoes({ isInApp: false, linkWA });
+    }, 500);
+  } else {
+    // Desktop: comportamento original (abre WhatsApp Web em nova aba)
+    setTimeout(() => {
+      window.open(linkWA, '_blank');
+      if (pdfBaixado) {
+        toast('✅ PDF baixado! Abrindo WhatsApp Web... Anexe o PDF lá manualmente.', 5000);
+      } else {
+        toast('✅ Abrindo WhatsApp...');
+      }
+    }, 600);
+  }
 }
 
 function baixarSomentePDF() {
@@ -2231,7 +2483,36 @@ function init() {
   
   renderStep();
   
+  // Aviso preventivo se estiver dentro de in-app browser do Instagram/Facebook
+  setTimeout(() => {
+    const amb = detectarAmbiente();
+    if (amb.isInApp && currentStep === 0) {
+      mostrarBannerInApp(amb.nomeApp);
+    }
+  }, 800);
+  
   console.log('✅ Anamnese MG COACH carregada');
+}
+
+// Banner sutil no topo se estiver no Instagram
+function mostrarBannerInApp(nomeApp) {
+  if (document.getElementById('bannerInApp')) return;
+  const banner = document.createElement('div');
+  banner.id = 'bannerInApp';
+  banner.style.cssText = `
+    position: fixed; top: 4px; left: 0; right: 0; z-index: 200;
+    background: linear-gradient(90deg, var(--orange), var(--orange-2));
+    color: #fff; padding: 10px 14px; font-size: 0.82rem; font-weight: 600;
+    display: flex; align-items: center; gap: 10px; justify-content: space-between;
+    animation: slideIn 0.4s; box-shadow: 0 4px 12px rgba(0,0,0,.3);
+  `;
+  banner.innerHTML = `
+    <div style="flex:1;line-height:1.4;">
+      ⚠️ Você abriu pelo <strong>${nomeApp}</strong>. Pra enviar o PDF ao final, abra esta página no <strong>navegador externo</strong> (toque em ⋯ → "Abrir no navegador").
+    </div>
+    <button onclick="document.getElementById('bannerInApp').remove()" style="background:rgba(255,255,255,.2);color:#fff;border:none;padding:6px 12px;border-radius:6px;font-size:0.75rem;font-weight:700;cursor:pointer;flex-shrink:0;">OK</button>
+  `;
+  document.body.appendChild(banner);
 }
 
 if (document.readyState === 'loading') {
