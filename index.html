@@ -1220,6 +1220,16 @@ input[type="number"] { -moz-appearance: textfield; }
           Baixar PDF + Enviar WhatsApp
         </button>
         
+        <div style="background:rgba(255,107,26,.08);border:1px solid rgba(255,107,26,.35);border-radius:10px;padding:12px 14px;margin-top:14px;text-align:left;">
+          <div style="color:var(--orange);font-weight:700;font-size:0.82rem;margin-bottom:6px;display:flex;align-items:center;gap:6px;">
+            <span style="font-size:1rem;">⚠️</span>
+            <span>Atenção: passo final importante</span>
+          </div>
+          <div style="color:var(--text-2);font-size:0.82rem;line-height:1.55;">
+            Ao tocar no botão acima, o WhatsApp vai abrir com o PDF anexado. <strong style="color:var(--text)">Você ainda precisa tocar no botão de enviar (✈️) dentro do WhatsApp</strong> e aguardar os <strong style="color:var(--text)">✓✓</strong> aparecerem — só assim a anamnese chega no coach.
+          </div>
+        </div>
+        
         <button class="btn btn-secondary" id="btnSoPDF" style="margin-top: 10px; max-width: none; background: var(--bg-2);">
           📄 Apenas baixar o PDF
         </button>
@@ -2233,11 +2243,11 @@ function mostrarModalInstrucoes(opts) {
   } else {
     // Mobile sem Web Share OU desktop - PDF baixado, precisa anexar manualmente
     conteudo = `
-      <div style="background:var(--bg-2);border:1px solid var(--orange);border-radius:16px;padding:24px;max-width:420px;width:100%;max-height:90vh;overflow-y:auto;">
+      <div style="background:var(--bg-2);border:1px solid var(--orange);border-radius:16px;padding:24px;max-width:440px;width:100%;max-height:92vh;overflow-y:auto;">
         <div style="text-align:center;margin-bottom:16px;">
           <div style="font-size:3rem;">✅</div>
-          <h3 style="color:var(--orange);margin:8px 0;font-size:1.2rem;">PDF baixado com sucesso!</h3>
-          <p style="color:var(--text-2);font-size:0.9rem;line-height:1.5;">Agora é só enviar pro coach. Siga estes 2 passos:</p>
+          <h3 style="color:var(--orange);margin:8px 0;font-size:1.2rem;">PDF baixado!</h3>
+          <p style="color:var(--text-2);font-size:0.9rem;line-height:1.5;">Falta o último passo pra enviar pro coach — atenção:</p>
         </div>
         
         <div style="background:var(--bg-3);border-radius:10px;padding:14px;margin:16px 0;border:1px solid var(--border);">
@@ -2249,12 +2259,21 @@ function mostrarModalInstrucoes(opts) {
             </div>
             <div style="margin-bottom:10px;display:flex;gap:8px;">
               <span style="background:var(--orange);color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;">2</span>
-              <span>No WhatsApp, toque no <strong>clipe 📎</strong>, escolha <strong>"Documento"</strong> e selecione o arquivo PDF que acabou de baixar</span>
+              <span>No WhatsApp, toque no <strong>clipe 📎</strong>, escolha <strong>"Documento"</strong> e selecione o PDF baixado</span>
+            </div>
+            <div style="margin-bottom:0;display:flex;gap:8px;">
+              <span style="background:var(--orange);color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;">3</span>
+              <span><strong>Toque no botão de enviar (✈️)</strong> e <strong style="color:var(--orange)">aguarde aparecer os ✓✓</strong> — só assim a mensagem chega no coach!</span>
             </div>
           </div>
         </div>
         
-        <a href="${linkWA}" target="_blank" rel="noopener" onclick="setTimeout(()=>fecharModalInstrucoes(),300)" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;padding:14px;border-radius:10px;font-weight:700;font-size:1rem;cursor:pointer;margin-bottom:8px;text-decoration:none;box-shadow:0 4px 14px rgba(37,211,102,.4);">
+        <div style="background:rgba(255,107,26,.1);border:1px solid var(--orange);border-radius:10px;padding:12px;margin-bottom:14px;">
+          <div style="color:var(--orange);font-weight:700;font-size:0.85rem;margin-bottom:4px;">⚠️ Muito importante</div>
+          <div style="color:var(--text-2);font-size:0.82rem;line-height:1.5;">Se você fechar o WhatsApp <strong>antes</strong> do ✓✓ aparecer, a mensagem <strong>não foi enviada</strong>. Volte e confirme!</div>
+        </div>
+        
+        <a href="${linkWA}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;padding:14px;border-radius:10px;font-weight:700;font-size:1rem;cursor:pointer;margin-bottom:8px;text-decoration:none;box-shadow:0 4px 14px rgba(37,211,102,.4);">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884"/></svg>
           Abrir WhatsApp
         </a>
@@ -2264,7 +2283,7 @@ function mostrarModalInstrucoes(opts) {
         </button>
         
         <button onclick="fecharModalInstrucoes()" style="width:100%;background:transparent;color:var(--text-3);border:none;padding:10px;font-size:0.85rem;cursor:pointer;">
-          Já enviei, fechar
+          Já enviei e vi o ✓✓, fechar
         </button>
       </div>
     `;
@@ -2281,6 +2300,78 @@ function mostrarModalInstrucoes(opts) {
 
 function fecharModalInstrucoes() {
   const modal = document.getElementById('modalInstrucoes');
+  if (modal) modal.remove();
+}
+
+// ============================================================
+// MODAL DE CONFIRMAÇÃO PÓS WEB SHARE
+// (Aparece quando o paciente já enviou via menu nativo de compartilhar.
+//  Reforça que ele PRECISA tocar em enviar dentro do WhatsApp.)
+// ============================================================
+function mostrarModalConfirmacao(opts) {
+  const antigo = document.getElementById('modalConfirmacao');
+  if (antigo) antigo.remove();
+  
+  const linkWA = opts.linkWA || '';
+  
+  const modal = document.createElement('div');
+  modal.id = 'modalConfirmacao';
+  modal.style.cssText = `
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,.88); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; animation: fadeIn 0.25s;
+  `;
+  
+  modal.innerHTML = `
+    <div style="background:var(--bg-2);border:1px solid var(--orange);border-radius:16px;padding:24px;max-width:440px;width:100%;max-height:92vh;overflow-y:auto;">
+      <div style="text-align:center;margin-bottom:18px;">
+        <div style="font-size:3.2rem;line-height:1;">📲</div>
+        <h3 style="color:var(--orange);margin:10px 0 6px;font-size:1.25rem;">Quase lá!</h3>
+        <p style="color:var(--text-2);font-size:0.92rem;line-height:1.5;margin:0;">Sua anamnese foi preparada. Falta <strong style="color:var(--text)">1 passo crítico</strong> dentro do WhatsApp:</p>
+      </div>
+      
+      <div style="background:var(--bg-3);border-radius:10px;padding:16px;margin-bottom:14px;border:1px solid var(--border);">
+        <div style="font-weight:700;color:var(--orange);font-size:0.78rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">✅ Confirme dentro do WhatsApp:</div>
+        <div style="color:var(--text);font-size:0.92rem;line-height:1.6;">
+          <div style="margin-bottom:10px;display:flex;gap:10px;align-items:flex-start;">
+            <span style="background:var(--orange);color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;flex-shrink:0;margin-top:1px;">1</span>
+            <span>Veja se o <strong>PDF está anexado</strong> na conversa</span>
+          </div>
+          <div style="margin-bottom:10px;display:flex;gap:10px;align-items:flex-start;">
+            <span style="background:var(--orange);color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;flex-shrink:0;margin-top:1px;">2</span>
+            <span>Toque no botão de <strong>enviar (✈️)</strong> dentro do WhatsApp</span>
+          </div>
+          <div style="margin-bottom:0;display:flex;gap:10px;align-items:flex-start;">
+            <span style="background:var(--orange);color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;flex-shrink:0;margin-top:1px;">3</span>
+            <span><strong style="color:var(--orange)">Aguarde os ✓✓ aparecerem</strong> — significa que chegou no coach</span>
+          </div>
+        </div>
+      </div>
+      
+      <div style="background:rgba(255,107,26,.1);border:1px solid var(--orange);border-radius:10px;padding:13px;margin-bottom:16px;">
+        <div style="color:var(--orange);font-weight:700;font-size:0.88rem;margin-bottom:4px;">⚠️ Atenção</div>
+        <div style="color:var(--text-2);font-size:0.84rem;line-height:1.5;">Se você fechou o WhatsApp <strong>sem ver os ✓✓</strong>, a mensagem <strong>NÃO foi enviada</strong>. Volte na conversa e toque em enviar!</div>
+      </div>
+      
+      <a href="${linkWA}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;padding:13px;border-radius:10px;font-weight:700;font-size:0.95rem;cursor:pointer;margin-bottom:8px;text-decoration:none;box-shadow:0 4px 14px rgba(37,211,102,.4);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884"/></svg>
+        Voltar pro WhatsApp
+      </a>
+      
+      <button onclick="fecharModalConfirmacao()" style="width:100%;background:transparent;color:var(--text-3);border:1px solid var(--border);padding:11px;border-radius:10px;font-size:0.88rem;cursor:pointer;font-weight:600;">
+        Já vi os ✓✓, fechar
+      </button>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // NÃO fecha ao clicar fora — instrução crítica, paciente precisa ler
+}
+
+function fecharModalConfirmacao() {
+  const modal = document.getElementById('modalConfirmacao');
   if (modal) modal.remove();
 }
 
@@ -2305,6 +2396,7 @@ function baixarPDFNovamente() {
 
 // Expor pro escopo global (são chamadas pelos onclick do HTML do modal)
 window.fecharModalInstrucoes = fecharModalInstrucoes;
+window.fecharModalConfirmacao = fecharModalConfirmacao;
 window.copiarLinkAnamnese = copiarLinkAnamnese;
 window.baixarPDFNovamente = baixarPDFNovamente;
 
@@ -2346,7 +2438,8 @@ async function enviarWhatsApp() {
         try {
           await navigator.share(dadosShare);
           limparRascunho();
-          toast('✅ Anamnese enviada!', 3500);
+          // Mostra modal de confirmação reforçando que precisa apertar enviar no WhatsApp
+          mostrarModalConfirmacao({ viaWebShare: true, linkWA });
           return;
         } catch (errShare) {
           // Usuário cancelou ou erro — não trata como erro fatal
