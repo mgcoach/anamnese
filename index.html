@@ -2427,7 +2427,33 @@ async function enviarPorEmail() {
   const nome = r.q_nome || 'Sem nome';
   const telefone = r.q_whatsapp || '—';
   const dataEnvio = new Date().toLocaleString('pt-BR');
-  const conteudo = construirMensagemWA();
+  let conteudo = construirMensagemWA();
+
+  // Anexa o bloco de dados estruturados (JSON) no fim do e-mail.
+  // O coach copia esse trecho e cola no app pra importar automaticamente.
+  try {
+    const pacoteDados = {
+      tipo: 'mgcoach_anamnese',
+      versao: 1,
+      geradoEm: new Date().toISOString(),
+      basico: {
+        nome: r.q_nome || '', sexo: r.q_sexo || '', idade: r.q_idade || '',
+        contato: r.q_whatsapp || '', altura: r.q_altura || ''
+      },
+      nutri: {
+        peso: r.q_peso || '', objetivo: r.q_objetivoDesc || '', prazo: r.q_prazo || '',
+        profissao: r.q_profissao || '', cidade: r.q_cidade || ''
+      },
+      respostasCompletas: r
+    };
+    conteudo += '\n\n========================================\n'
+      + 'DADOS PARA IMPORTAR NO APP (copie tudo entre as linhas)\n'
+      + '========================================\n'
+      + '###MGCOACH_INICIO###\n'
+      + JSON.stringify(pacoteDados)
+      + '\n###MGCOACH_FIM###\n'
+      + '========================================';
+  } catch (e) { console.warn('falha ao anexar JSON no email', e); }
 
   const payload = {
     service_id: EMAILJS_SERVICE_ID,
