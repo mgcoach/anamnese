@@ -1235,6 +1235,10 @@ input[type="number"] { -moz-appearance: textfield; }
         <button class="btn btn-secondary" id="btnSoPDF" style="margin-top: 10px; max-width: none; background: var(--bg-2);">
           📄 Apenas baixar o PDF
         </button>
+
+        <button class="btn btn-secondary" id="btnBaixarJSON" style="margin-top: 10px; max-width: none; background: var(--orange); color:#1a1a1a; font-weight:700;">
+          📋 Baixar dados pro app do coach (.json)
+        </button>
         
         <button class="btn btn-secondary" id="btnReiniciar" style="margin-top: 10px; max-width: none; background: transparent;">
           Refazer anamnese
@@ -2620,6 +2624,68 @@ function baixarSomentePDF() {
 }
 
 // ============================================================
+// EXPORTAR DADOS PRO APP DO COACH (.json estruturado)
+// ------------------------------------------------------------
+// Gera um arquivo que o app MG COACH importa direto no cadastro
+// compartilhado (nome, sexo, nascimento/idade, contato, altura)
+// + dados do NUTRI (peso, objetivo) + ficha rica (observações).
+// ============================================================
+function baixarJSONAnamnese() {
+  coletarRespostasParciais();
+  const r = respostas;
+  if (!r.q_nome) { toast('⚠️ Preencha pelo menos o nome', 3500); return; }
+
+  // Monta um pacote no formato que o app entende
+  const pacote = {
+    tipo: 'mgcoach_anamnese',
+    versao: 1,
+    geradoEm: new Date().toISOString(),
+    // dados básicos -> cadastro compartilhado dos 3 apps
+    basico: {
+      nome: r.q_nome || '',
+      sexo: r.q_sexo || '',
+      idade: r.q_idade || '',
+      contato: r.q_whatsapp || '',
+      altura: r.q_altura || ''
+    },
+    // dados pro NUTRI (TMB + ficha)
+    nutri: {
+      peso: r.q_peso || '',
+      objetivo: r.q_objetivoDesc || '',
+      prazo: r.q_prazo || '',
+      profissao: r.q_profissao || '',
+      cidade: r.q_cidade || ''
+    },
+    // todas as respostas, pra montar observações/ficha completa
+    respostasCompletas: r
+  };
+
+  const conteudo = JSON.stringify(pacote, null, 2);
+  const nomeBase = (r.q_nome || 'anamnese').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+  const nomeArq = `anamnese_${nomeBase}.json`;
+
+  // Tenta compartilhar como arquivo; se não, baixa
+  (async () => {
+    try {
+      const arquivo = new File([conteudo], nomeArq, { type: 'application/json' });
+      if (navigator.canShare && navigator.canShare({ files: [arquivo] })) {
+        await navigator.share({ files: [arquivo], title: 'Anamnese ' + (r.q_nome || ''), text: 'Dados da anamnese para o coach' });
+        toast('✅ Dados compartilhados!');
+        return;
+      }
+    } catch (e) {
+      if (e && e.name === 'AbortError') return;
+    }
+    const blob = new Blob([conteudo], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = nomeArq;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast('📋 Arquivo de dados baixado! Envie junto com o PDF pro coach.');
+  })();
+}
+
+// ============================================================
 // INICIALIZAÇÃO
 // ============================================================
 function init() {
@@ -2630,6 +2696,7 @@ function init() {
   $('btnEnviarEmail').addEventListener('click', handleEnviarEmail);
   $('btnEnviarWA').addEventListener('click', enviarWhatsApp);
   $('btnSoPDF').addEventListener('click', baixarSomentePDF);
+  { const b = $('btnBaixarJSON'); if (b) b.addEventListener('click', baixarJSONAnamnese); }
   $('btnReiniciar').addEventListener('click', () => {
     if (confirm('Refazer a anamnese? Suas respostas atuais serão apagadas.')) {
       limparRascunho();
