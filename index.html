@@ -3,29 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0a0a0a">
+<meta name="theme-color" content="#F9F8F5">
 <title>Anamnese · MG COACH</title>
 
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="MG Anamnese">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
 :root {
-  --bg: #0a0a0a;
-  --bg-2: #161616;
-  --bg-3: #1f1f1f;
-  --border: #2a2a2a;
-  --text: #f5f5f5;
-  --text-2: #b8b8b8;
-  --text-3: #707070;
-  --orange: #ff6b1a;
-  --orange-2: #ff8c42;
-  --orange-glow: rgba(255, 107, 26, 0.4);
-  --success: #10b981;
-  --error: #ef4444;
+  --bg: #F9F8F5;
+  --bg-2: #FFFFFF;
+  --bg-3: #F2F0EA;
+  --border: #E5E3DA;
+  --border-2: #D0CCC0;
+  --text: #1C1B18;
+  --text-2: #6B6960;
+  --text-3: #A8A69E;
+  --gold: #B8922A;
+  --gold-2: #D4AA40;
+  --gold-deep: #8C6C1C;
+  --gold-light: #F5EDD6;
+  --gold-glow: rgba(184, 146, 42, 0.25);
+  --success: #2A7A52;
+  --error: #C0392B;
+  --shadow-sm: 0 1px 2px rgba(28, 27, 24, 0.04), 0 1px 3px rgba(28, 27, 24, 0.03);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -33,7 +41,7 @@
 html, body {
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   min-height: 100vh;
   min-height: 100dvh;
   overflow-x: hidden;
@@ -48,8 +56,8 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(circle at 15% 10%, rgba(255, 107, 26, 0.10) 0%, transparent 40%),
-    radial-gradient(circle at 85% 90%, rgba(255, 140, 66, 0.08) 0%, transparent 45%);
+    radial-gradient(circle at 12% 0%, rgba(212, 170, 64, 0.10) 0%, transparent 42%),
+    radial-gradient(circle at 90% 100%, rgba(184, 146, 42, 0.06) 0%, transparent 45%);
   pointer-events: none;
   z-index: 0;
 }
@@ -62,16 +70,16 @@ body::before {
   top: 0;
   left: 0;
   width: 100%;
-  height: 4px;
-  background: var(--bg-2);
+  height: 3px;
+  background: var(--bg-3);
   z-index: 100;
 }
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--orange), var(--orange-2));
+  background: linear-gradient(90deg, var(--gold), var(--gold-2));
   width: 0%;
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 12px var(--orange-glow);
+  box-shadow: 0 0 12px var(--gold-glow);
 }
 
 /* === HEADER === */
@@ -81,31 +89,31 @@ body::before {
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--border);
-  background: rgba(10, 10, 10, 0.85);
+  background: rgba(249, 248, 245, 0.88);
   backdrop-filter: blur(10px);
   position: sticky;
-  top: 4px;
+  top: 3px;
   z-index: 90;
 }
 .header-brand { display: flex; align-items: center; gap: 10px; }
 .logo-mark {
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, var(--orange), var(--orange-2));
-  border-radius: 8px;
+  background: linear-gradient(145deg, var(--gold-2) 0%, var(--gold) 55%, var(--gold-deep) 100%);
+  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px var(--orange-glow);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35), 0 4px 12px var(--gold-glow);
 }
 .logo-mark svg { width: 20px; height: 20px; fill: #fff; }
 .brand-text h1 {
   font-size: 0.95rem;
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.02em;
   line-height: 1;
 }
-.brand-text h1 span { color: var(--orange); }
+.brand-text h1 span { color: var(--gold); }
 .brand-text .tag {
   font-size: 0.65rem;
   color: var(--text-3);
@@ -151,8 +159,8 @@ body::before {
   to { opacity: 1; transform: translateY(0); }
 }
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 20px var(--orange-glow), 0 0 40px rgba(255, 107, 26, 0.2); }
-  50% { box-shadow: 0 0 30px var(--orange-glow), 0 0 60px rgba(255, 107, 26, 0.35); }
+  0%, 100% { box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.35), 0 10px 30px rgba(184, 146, 42, 0.22); }
+  50% { box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.35), 0 14px 44px rgba(184, 146, 42, 0.34); }
 }
 
 .section-label {
@@ -160,17 +168,17 @@ body::before {
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.15em;
-  color: var(--orange);
+  color: var(--gold);
   text-transform: uppercase;
   margin-bottom: 8px;
   padding: 4px 12px;
-  background: rgba(255, 107, 26, 0.1);
-  border: 1px solid rgba(255, 107, 26, 0.3);
+  background: var(--gold-light);
+  border: 1px solid rgba(184, 146, 42, 0.25);
   border-radius: 20px;
 }
 .step h2 {
-  font-size: 1.55rem;
-  font-weight: 800;
+  font-size: 1.6rem;
+  font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.2;
   margin: 0 0 8px;
@@ -197,7 +205,7 @@ label {
   color: var(--text-2);
   margin-bottom: 8px;
 }
-label .req { color: var(--orange); }
+label .req { color: var(--gold); }
 
 input[type="text"], input[type="number"], input[type="tel"], input[type="email"],
 input[type="date"], textarea, select {
@@ -213,16 +221,17 @@ input[type="date"], textarea, select {
   transition: all 0.2s;
   -webkit-appearance: none;
   appearance: none;
+  box-shadow: var(--shadow-sm);
 }
 input:focus, textarea:focus, select:focus {
-  border-color: var(--orange);
-  background: var(--bg-3);
-  box-shadow: 0 0 0 3px rgba(255, 107, 26, 0.15);
+  border-color: var(--gold);
+  background: #FFFDF8;
+  box-shadow: 0 0 0 3px rgba(184, 146, 42, 0.15);
 }
 input::placeholder, textarea::placeholder { color: var(--text-3); }
 
 select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23ff6b1a' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23B8922A' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 16px center;
   padding-right: 40px;
@@ -252,12 +261,12 @@ textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
   align-items: center;
   gap: 6px;
 }
-.chip:hover { border-color: var(--orange); color: var(--text); }
+.chip:hover { border-color: var(--gold-2); color: var(--text); }
 .chip.selected {
-  background: linear-gradient(135deg, var(--orange), var(--orange-2));
-  border-color: var(--orange);
+  background: linear-gradient(135deg, var(--gold), var(--gold-2));
+  border-color: var(--gold);
   color: #fff;
-  box-shadow: 0 4px 12px rgba(255, 107, 26, 0.3);
+  box-shadow: 0 3px 10px rgba(184, 146, 42, 0.28);
 }
 .chip.numeric {
   min-width: 48px;
@@ -275,12 +284,13 @@ textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
   transition: all 0.2s;
   text-align: center;
   user-select: none;
+  box-shadow: var(--shadow-sm);
 }
-.option-card:hover { border-color: var(--orange); }
+.option-card:hover { border-color: var(--gold); }
 .option-card.selected {
-  background: rgba(255, 107, 26, 0.1);
-  border-color: var(--orange);
-  box-shadow: 0 0 0 2px rgba(255, 107, 26, 0.2);
+  background: var(--gold-light);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(184, 146, 42, 0.2);
 }
 .option-card .emoji { font-size: 2rem; margin-bottom: 6px; display: block; }
 .option-card .label { font-size: 0.9rem; font-weight: 600; color: var(--text); }
@@ -304,10 +314,10 @@ textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
   transition: all 0.2s;
   user-select: none;
 }
-.scale-item:hover { border-color: var(--orange); }
+.scale-item:hover { border-color: var(--gold); }
 .scale-item.selected {
-  background: linear-gradient(135deg, var(--orange), var(--orange-2));
-  border-color: var(--orange);
+  background: linear-gradient(135deg, var(--gold), var(--gold-2));
+  border-color: var(--gold);
   color: #fff;
   transform: scale(1.05);
 }
@@ -326,7 +336,7 @@ textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(10, 10, 10, 0.95);
+  background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(12px);
   border-top: 1px solid var(--border);
   padding: 14px 20px;
@@ -359,11 +369,11 @@ textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
   gap: 8px;
 }
 .btn-primary {
-  background: linear-gradient(135deg, var(--orange), var(--orange-2));
+  background: linear-gradient(135deg, var(--gold), var(--gold-2));
   color: #fff;
-  box-shadow: 0 4px 14px var(--orange-glow);
+  box-shadow: 0 4px 14px var(--gold-glow);
 }
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--orange-glow); }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--gold-glow); }
 .btn-primary:active { transform: translateY(0); }
 .btn-secondary {
   background: var(--bg-2);
@@ -371,7 +381,7 @@ textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
   border: 1px solid var(--border);
   max-width: 120px;
 }
-.btn-secondary:hover { background: var(--bg-3); border-color: var(--orange); }
+.btn-secondary:hover { background: var(--bg-3); border-color: var(--gold-2); }
 .btn-whatsapp {
   background: linear-gradient(135deg, #25D366, #128C7E);
   color: #fff;
@@ -391,8 +401,9 @@ textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
 .welcome .logo-big {
   width: 88px;
   height: 88px;
-  background: linear-gradient(135deg, var(--orange), var(--orange-2));
-  border-radius: 22px;
+  background: linear-gradient(145deg, var(--gold-2) 0%, var(--gold) 55%, var(--gold-deep) 100%);
+  border-radius: 24px;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -402,11 +413,11 @@ textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
 .welcome .logo-big svg { width: 50px; height: 50px; fill: #fff; }
 .welcome h1 {
   font-size: 2.2rem;
-  font-weight: 900;
-  letter-spacing: -0.03em;
+  font-weight: 800;
+  letter-spacing: 0.01em;
   margin-bottom: 4px;
 }
-.welcome h1 span { color: var(--orange); }
+.welcome h1 span { color: var(--gold); }
 .welcome .tagline {
   color: var(--text-3);
   font-size: 0.75rem;
@@ -438,6 +449,7 @@ textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 14px;
+  box-shadow: var(--shadow-sm);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -445,7 +457,7 @@ textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
 .welcome .feat-icon {
   width: 36px;
   height: 36px;
-  background: rgba(255, 107, 26, 0.15);
+  background: var(--gold-light);
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -467,14 +479,14 @@ textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
 .success .check-circle {
   width: 100px;
   height: 100px;
-  background: linear-gradient(135deg, var(--success), #059669);
+  background: linear-gradient(135deg, #34946A, var(--success));
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 24px;
   animation: checkPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 8px 32px rgba(42, 122, 82, 0.3);
 }
 .success .check-circle svg { width: 56px; height: 56px; fill: #fff; }
 @keyframes checkPop {
@@ -497,7 +509,7 @@ textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
   color: var(--text-2);
   line-height: 1.6;
 }
-.success .summary-card strong { color: var(--orange); }
+.success .summary-card strong { color: var(--gold); }
 
 /* === HELPERS === */
 .hint {
@@ -516,6 +528,40 @@ textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
 .field-group.error textarea,
 .field-group.error select { border-color: var(--error); }
 .field-group.error .error-msg { display: block; }
+
+.hint-box {
+  background: var(--gold-light);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 10px 10px 0;
+  padding: 11px 14px;
+  font-size: 0.82rem;
+  color: var(--text-2);
+  line-height: 1.55;
+  margin-top: 10px;
+}
+.hint-box strong { color: var(--text); font-weight: 600; }
+
+.subsection-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 8px 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.subsection-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 44px;
+  height: 2px;
+  background: var(--gold);
+}
 
 .divider {
   height: 1px;
@@ -538,14 +584,14 @@ input[type="number"] { -moz-appearance: textfield; }
   left: 50%;
   transform: translateX(-50%);
   background: var(--bg-3);
-  border: 1px solid var(--orange);
+  border: 1px solid var(--gold);
   color: var(--text);
   padding: 12px 20px;
   border-radius: 10px;
   font-weight: 600;
   font-size: 0.9rem;
   z-index: 200;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 24px rgba(28, 27, 24, 0.12);
   display: none;
   animation: fadeIn 0.3s;
 }
@@ -589,7 +635,7 @@ input[type="number"] { -moz-appearance: textfield; }
         
         <h2>Vamos começar sua jornada</h2>
         <p>Esta anamnese vai me ajudar a montar o melhor plano de treino e nutrição pra <strong>você</strong>.</p>
-        <p style="font-size: 0.85rem; color: var(--text-3);">⏱️ Leva cerca de 5-7 minutos</p>
+        <p style="font-size: 0.85rem; color: var(--text-3);">⏱️ Leva cerca de 8 a 10 minutos · Suas respostas ficam salvas se precisar parar</p>
         
         <div class="features">
           <div class="feat">
@@ -616,7 +662,7 @@ input[type="number"] { -moz-appearance: textfield; }
     <div class="step" data-step="1">
       <span class="section-label">1 · Sobre você</span>
       <h2>Vamos nos conhecer</h2>
-      <p class="subtitle">Comece pelos seus dados básicos.</p>
+      <p class="subtitle">Começamos pelo básico. Peso e altura me ajudam a estimar quanta energia seu corpo gasta por dia — é o ponto de partida do plano.</p>
       
       <div class="field-group" data-required>
         <label>Nome completo <span class="req">*</span></label>
@@ -647,11 +693,13 @@ input[type="number"] { -moz-appearance: textfield; }
           <label>Peso atual (kg) <span class="req">*</span></label>
           <input type="number" id="q_peso" min="30" max="250" step="0.1" placeholder="kg" inputmode="decimal">
           <div class="error-msg">Informe seu peso</div>
+          <div class="hint">De preferência pela manhã, em jejum. Aproximado já serve.</div>
         </div>
         <div class="field-group" data-required>
           <label>Altura (cm) <span class="req">*</span></label>
           <input type="number" id="q_altura" min="120" max="230" placeholder="cm" inputmode="numeric">
           <div class="error-msg">Informe sua altura</div>
+          <div class="hint">Em centímetros. Ex: 1,72 m = 172</div>
         </div>
       </div>
       
@@ -663,13 +711,14 @@ input[type="number"] { -moz-appearance: textfield; }
       <div class="field-group">
         <label>Profissão</label>
         <input type="text" id="q_profissao" placeholder="Ex: Médica, Engenheiro, Estudante...">
-        <div class="hint">A profissão me ajuda a entender sua rotina diária</div>
+        <div class="hint">Me ajuda a entender sua rotina: quem passa o dia sentado gasta bem menos energia do que quem trabalha em pé ou andando.</div>
       </div>
       
       <div class="field-group" data-required>
         <label>WhatsApp pra contato <span class="req">*</span></label>
         <input type="tel" id="q_whatsapp" placeholder="(00) 90000-0000" inputmode="tel">
         <div class="error-msg">Preciso do seu WhatsApp pra retornar</div>
+        <div class="hint">Com DDD. É por aqui que eu vou te chamar pra começar.</div>
       </div>
     </div>
     
@@ -677,7 +726,7 @@ input[type="number"] { -moz-appearance: textfield; }
     <div class="step" data-step="2">
       <span class="section-label">2 · Objetivo</span>
       <h2>O que você quer alcançar?</h2>
-      <p class="subtitle">Selecione seu principal objetivo agora.</p>
+      <p class="subtitle">Escolha o que mais importa pra você agora. Se tiver mais de um, fique com o principal — o resto você conta logo abaixo.</p>
       
       <div class="option-cards" data-single="q_objetivo">
         <div class="option-card" data-value="Emagrecimento">
@@ -712,13 +761,17 @@ input[type="number"] { -moz-appearance: textfield; }
         </div>
       </div>
       
+      <div class="hint-box" style="margin-top: 14px;">
+        <strong>Hipertrofia</strong> é aumentar o tamanho dos músculos. <strong>Definição</strong> é reduzir a gordura mantendo o músculo que você já tem, pra ele aparecer mais. <strong>Emagrecer</strong> é foco em perder peso e medidas.
+      </div>
+
       <div class="field-group" style="margin-top: 24px;">
         <label>Descreva seu objetivo com suas palavras</label>
         <textarea id="q_objetivoDesc" rows="3" placeholder="Ex: Quero perder 8kg em 4 meses, definir o abdômen e manter força nos treinos..."></textarea>
       </div>
       
       <div class="field-group">
-        <label>Qual seu prazo?</label>
+        <label>Em quanto tempo você gostaria de ver resultado?</label>
         <select id="q_prazo">
           <option value="">Selecione</option>
           <option>Sem pressa, foco em consistência</option>
@@ -727,6 +780,7 @@ input[type="number"] { -moz-appearance: textfield; }
           <option>6-12 meses (longo prazo)</option>
           <option>Mais de 1 ano (jornada contínua)</option>
         </select>
+        <div class="hint">Mudanças que duram costumam levar alguns meses. Um prazo realista ajuda a gente a planejar sem pressa demais.</div>
       </div>
     </div>
     
@@ -734,7 +788,7 @@ input[type="number"] { -moz-appearance: textfield; }
     <div class="step" data-step="3">
       <span class="section-label">3 · Disponibilidade</span>
       <h2>Quando você pode treinar?</h2>
-      <p class="subtitle">Vamos montar uma rotina que cabe na sua semana.</p>
+      <p class="subtitle">Seja realista: um plano de 3 dias que você cumpre dá mais resultado do que um de 6 que você abandona na segunda semana.</p>
       
       <div class="field-group">
         <label>Quantos dias por semana você consegue treinar? <span class="req">*</span></label>
@@ -771,6 +825,7 @@ input[type="number"] { -moz-appearance: textfield; }
           <div class="chip" data-value="75-90 min">75-90 min</div>
           <div class="chip" data-value="Mais de 90 min">+90 min</div>
         </div>
+        <div class="hint">Conte só o tempo dentro do local de treino, sem o deslocamento.</div>
       </div>
     </div>
     
@@ -778,7 +833,7 @@ input[type="number"] { -moz-appearance: textfield; }
     <div class="step" data-step="4">
       <span class="section-label">4 · Local de treino</span>
       <h2>Onde você treina?</h2>
-      <p class="subtitle">Preciso saber o maquinário disponível pra montar o melhor treino.</p>
+      <p class="subtitle">Cada lugar tem aparelhos diferentes. Sabendo onde você treina, eu escolho exercícios que você vai encontrar lá — sem improviso.</p>
       
       <div class="field-group">
         <label>Qual o local principal? <span class="req">*</span></label>
@@ -847,7 +902,7 @@ input[type="number"] { -moz-appearance: textfield; }
     <div class="step" data-step="5">
       <span class="section-label">5 · Experiência</span>
       <h2>Sua experiência com treino</h2>
-      <p class="subtitle">Pra calibrar o nível certo de treino pra você.</p>
+      <p class="subtitle">Isso define a intensidade e a complexidade dos exercícios. Não existe resposta errada — começar no nível certo é o que evita lesão.</p>
       
       <div class="field-group">
         <label>Como você se classifica? <span class="req">*</span></label>
@@ -873,6 +928,7 @@ input[type="number"] { -moz-appearance: textfield; }
             <div class="sub">+2 anos</div>
           </div>
         </div>
+        <div class="hint-box">Conte só o tempo de treino <strong>sem pausas longas</strong>. Se você treinou 2 anos mas está parado há mais de 1 ano, marque Iniciante ou Iniciante+.</div>
       </div>
       
       <div class="field-group">
@@ -897,15 +953,115 @@ input[type="number"] { -moz-appearance: textfield; }
       <div class="field-group">
         <label>Quais exercícios você não gosta ou não consegue executar?</label>
         <textarea id="q_exerciciosEvitar" rows="2" placeholder="Ex: Agachamento livre, supino com barra..."></textarea>
-        <div class="hint">Opcional — me ajuda a evitar na prescrição</div>
+        <div class="hint">Opcional. Pode ser por dor, desconforto ou simplesmente porque não gosta — tudo isso conta.</div>
       </div>
     </div>
     
-    <!-- ========== STEP 6: SAÚDE E IMPEDIMENTOS ========== -->
+    <!-- ========== STEP 6: CONTEXTO PRÉVIO ========== -->
     <div class="step" data-step="6">
-      <span class="section-label">6 · Saúde</span>
+      <span class="section-label">6 · Contexto prévio</span>
+      <h2>O que você já tentou até aqui</h2>
+      <p class="subtitle">Saber o que funcionou e o que não funcionou pra você evita que a gente repita erros. Responda do jeito que é de verdade — não existe resposta certa.</p>
+
+      <div class="subsection-title">🍽️ Alimentação</div>
+
+      <div class="field-group">
+        <label>Como você descreveria sua alimentação hoje?</label>
+        <textarea id="q_contextAlim" rows="3" placeholder="Ex: Durante a semana como bem, marmita com arroz, feijão e frango. No fim de semana saio muito da linha, pizza e cerveja. Belisco doce à tarde no trabalho..."></textarea>
+        <div class="hint-box">Pense num dia comum: o que você come de manhã, no almoço, à tarde e à noite. Vale contar os deslizes também — é com eles que eu ajusto o plano.</div>
+      </div>
+
+      <div class="field-group">
+        <label>Já fez alguma dieta ou estratégia alimentar?</label>
+        <div class="chips" data-multi="q_dietasPassadas">
+          <div class="chip" data-value="Nunca fiz nenhuma">Nunca fiz nenhuma</div>
+          <div class="chip" data-value="Low-carb">Low-carb</div>
+          <div class="chip" data-value="Cetogênica (Keto)">Cetogênica (Keto)</div>
+          <div class="chip" data-value="Jejum intermitente">Jejum intermitente</div>
+          <div class="chip" data-value="Contagem de calorias/macros">Contagem de calorias/macros</div>
+          <div class="chip" data-value="Dieta hipocalórica">Dieta hipocalórica</div>
+          <div class="chip" data-value="Reeducação alimentar">Reeducação alimentar</div>
+          <div class="chip" data-value="Prescrita por nutricionista">Prescrita por nutricionista</div>
+          <div class="chip" data-value="Outra">Outra</div>
+        </div>
+        <div class="hint-box">
+          <strong>Low-carb:</strong> cortar boa parte dos carboidratos (pão, arroz, massa).<br>
+          <strong>Cetogênica:</strong> versão extrema da low-carb, quase zero carboidrato.<br>
+          <strong>Jejum intermitente:</strong> ficar várias horas sem comer, ex: das 20h às 12h.<br>
+          <strong>Calorias/macros:</strong> pesar e anotar o que come num app (ex: MyFitnessPal).<br>
+          <strong>Hipocalórica:</strong> comer menos do que o corpo gasta pra perder peso.
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Como foi essa experiência? Teve resultado? Conseguiu manter?</label>
+        <textarea id="q_dietaResultado" rows="3" placeholder="Ex: Fiz low-carb por 2 meses, perdi 6kg, mas não aguentei ficar sem pão e recuperei tudo em 3 meses..."></textarea>
+        <div class="hint">Conte o que deu certo, o que foi difícil e por que parou. Isso diz muito sobre o que vai funcionar pra você.</div>
+      </div>
+
+      <div class="divider" style="margin: 28px 0 24px;"></div>
+
+      <div class="subsection-title">🏋️ Treino</div>
+
+      <div class="field-group">
+        <label>Você já treinou antes? Com que tipo de orientação?</label>
+        <div class="chips" data-single="q_treinoPrevio">
+          <div class="chip" data-value="Nunca treinei">Nunca treinei</div>
+          <div class="chip" data-value="Treinei sozinho">Treinei sozinho(a)</div>
+          <div class="chip" data-value="Tive personal trainer">Tive personal trainer</div>
+          <div class="chip" data-value="Usei planilha online">Usei planilha online</div>
+          <div class="chip" data-value="Treinei em grupo/turma">Treinei em grupo/turma</div>
+        </div>
+        <div class="hint">"Sozinho" inclui seguir a ficha que o professor da academia passou e nunca mais revisou.</div>
+      </div>
+
+      <div id="grupoTreinoDetalhe">
+        <div class="field-group">
+          <label>Como seu treino era dividido na semana?</label>
+          <div class="chips" data-single="q_splitUsado">
+            <div class="chip" data-value="Full Body">Full Body</div>
+            <div class="chip" data-value="ABC">ABC</div>
+            <div class="chip" data-value="ABCD">ABCD</div>
+            <div class="chip" data-value="ABCDE">ABCDE</div>
+            <div class="chip" data-value="Upper/Lower">Upper/Lower</div>
+            <div class="chip" data-value="PPL (Push/Pull/Legs)">PPL (Push/Pull/Legs)</div>
+            <div class="chip" data-value="Aeróbico / Cardio">Só aeróbico / cardio</div>
+            <div class="chip" data-value="Não sei dizer">Não sei dizer</div>
+            <div class="chip" data-value="Nunca treinei musculação">Nunca fiz musculação</div>
+          </div>
+          <div class="hint-box">
+            <strong>Full Body:</strong> o corpo todo em todo treino.<br>
+            <strong>ABC / ABCD / ABCDE:</strong> cada letra é um treino diferente. Ex: A = peito e tríceps, B = costas e bíceps, C = pernas.<br>
+            <strong>Upper/Lower:</strong> um dia parte de cima, outro dia parte de baixo.<br>
+            <strong>PPL:</strong> um dia de empurrar (peito, ombro, tríceps), um de puxar (costas, bíceps) e um de pernas.
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Quantas séries por semana você fazia para cada músculo, em média?</label>
+          <div class="chips" data-single="q_volumeSemanal">
+            <div class="chip" data-value="Menos de 8 séries">Menos de 8</div>
+            <div class="chip" data-value="8 a 12 séries">8 a 12</div>
+            <div class="chip" data-value="12 a 16 séries">12 a 16</div>
+            <div class="chip" data-value="16 a 20 séries">16 a 20</div>
+            <div class="chip" data-value="Mais de 20 séries">Mais de 20</div>
+            <div class="chip" data-value="Não sei calcular">Não sei calcular</div>
+            <div class="chip" data-value="Nunca treinei">Nunca treinei</div>
+          </div>
+          <div class="hint-box">
+            <strong>Como calcular:</strong> escolha um músculo, por exemplo o peito. Some todas as séries de exercícios de peito que você fazia na semana inteira.<br>
+            Ex: supino 4 séries + crucifixo 3 séries, duas vezes por semana = <strong>14 séries de peito</strong>.<br>
+            Se ficar em dúvida, marque "Não sei calcular" — eu descubro com você depois.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== STEP 7: SAÚDE E IMPEDIMENTOS ========== -->
+    <div class="step" data-step="7">
+      <span class="section-label">7 · Saúde</span>
       <h2>Cuidando da sua segurança</h2>
-      <p class="subtitle">Informações de saúde para prescrever com cuidado.</p>
+      <p class="subtitle">Essas respostas ficam só entre nós e servem pra eu prescrever com segurança. Na dúvida, marque — é melhor sobrar informação do que faltar.</p>
       
       <div class="field-group">
         <label>Você tem alguma lesão atual ou em recuperação? <span class="req">*</span></label>
@@ -913,6 +1069,7 @@ input[type="number"] { -moz-appearance: textfield; }
           <div class="chip" data-value="Não">✅ Não</div>
           <div class="chip" data-value="Sim">⚠️ Sim</div>
         </div>
+        <div class="hint">Considere qualquer dor ou limitação que atrapalhe algum movimento hoje, mesmo que pequena.</div>
       </div>
       
       <div class="field-group" id="grupoLesaoDesc" style="display:none;">
@@ -945,7 +1102,7 @@ input[type="number"] { -moz-appearance: textfield; }
       <div class="field-group">
         <label>Faz uso contínuo de algum medicamento?</label>
         <textarea id="q_medicamentos" rows="2" placeholder="Ex: Losartana 50mg, anticoncepcional..."></textarea>
-        <div class="hint">Opcional</div>
+        <div class="hint">Opcional. Alguns remédios mudam a frequência cardíaca ou o apetite, por isso pergunto.</div>
       </div>
       
       <div class="field-group" id="grupoGravidez" style="display:none;">
@@ -958,11 +1115,11 @@ input[type="number"] { -moz-appearance: textfield; }
       </div>
     </div>
     
-    <!-- ========== STEP 7: ROTINA ALIMENTAR ========== -->
-    <div class="step" data-step="7">
-      <span class="section-label">7 · Rotina alimentar</span>
+    <!-- ========== STEP 8: ROTINA ALIMENTAR ========== -->
+    <div class="step" data-step="8">
+      <span class="section-label">8 · Rotina alimentar</span>
       <h2>Como é seu dia a dia com comida?</h2>
-      <p class="subtitle">Vou montar um plano que se encaixa na sua rotina, não o contrário.</p>
+      <p class="subtitle">Vou montar um plano que se encaixa na sua rotina, não o contrário. Lanches rápidos contam como refeição.</p>
       
       <div class="field-group">
         <label>Quantas refeições por dia você costuma fazer? <span class="req">*</span></label>
@@ -1018,12 +1175,13 @@ input[type="number"] { -moz-appearance: textfield; }
           <div class="chip" data-value="Mais de 3L">+ 3L</div>
           <div class="chip" data-value="Não controlo">Não controlo</div>
         </div>
+        <div class="hint">Referência: um copo comum tem cerca de 250 ml, então 8 copos ≈ 2 litros.</div>
       </div>
     </div>
     
-    <!-- ========== STEP 8: PREFERÊNCIAS ALIMENTARES ========== -->
-    <div class="step" data-step="8">
-      <span class="section-label">8 · Preferências</span>
+    <!-- ========== STEP 9: PREFERÊNCIAS ALIMENTARES ========== -->
+    <div class="step" data-step="9">
+      <span class="section-label">9 · Preferências</span>
       <h2>Seu paladar e restrições</h2>
       <p class="subtitle">Não vou te mandar comer o que você odeia, prometo.</p>
       
@@ -1037,7 +1195,7 @@ input[type="number"] { -moz-appearance: textfield; }
       <div class="field-group">
         <label>Alimentos que NÃO consome de forma nenhuma</label>
         <textarea id="q_alimentosNao" rows="3" placeholder="Ex: Peixe, jiló, leite, glúten..."></textarea>
-        <div class="hint">Por que? Alergia, intolerância, aversão, restrição religiosa?</div>
+        <div class="hint">Se puder, diga o motivo: alergia, intolerância, simplesmente não gosta ou restrição religiosa.</div>
       </div>
       
       <div class="field-group">
@@ -1062,11 +1220,11 @@ input[type="number"] { -moz-appearance: textfield; }
       </div>
     </div>
     
-    <!-- ========== STEP 9: SUPLEMENTAÇÃO E BEBIDAS ========== -->
-    <div class="step" data-step="9">
-      <span class="section-label">9 · Suplementação</span>
+    <!-- ========== STEP 10: SUPLEMENTAÇÃO E BEBIDAS ========== -->
+    <div class="step" data-step="10">
+      <span class="section-label">10 · Suplementação</span>
       <h2>Suplementos e bebidas</h2>
-      <p class="subtitle">Pra avaliar uso atual e necessidades.</p>
+      <p class="subtitle">Me conta o que você já usa, sem julgamento. Assim eu avalio o que vale manter, ajustar ou tirar.</p>
       
       <div class="field-group">
         <label>Usa algum suplemento atualmente?</label>
@@ -1116,11 +1274,11 @@ input[type="number"] { -moz-appearance: textfield; }
       </div>
     </div>
     
-    <!-- ========== STEP 10: SONO E ESTRESSE ========== -->
-    <div class="step" data-step="10">
-      <span class="section-label">10 · Sono e estresse</span>
+    <!-- ========== STEP 11: SONO E ESTRESSE ========== -->
+    <div class="step" data-step="11">
+      <span class="section-label">11 · Sono e estresse</span>
       <h2>Recuperação e bem-estar</h2>
-      <p class="subtitle">Sono e estresse impactam diretamente no resultado.</p>
+      <p class="subtitle">É dormindo que o músculo se recupera. Pouco sono e muito estresse aumentam a fome e travam o resultado.</p>
       
       <div class="field-group">
         <label>Quantas horas você dorme por noite (em média)? <span class="req">*</span></label>
@@ -1135,6 +1293,7 @@ input[type="number"] { -moz-appearance: textfield; }
       
       <div class="field-group">
         <label>Como é a qualidade do seu sono?</label>
+        <div class="hint" style="margin: -4px 0 10px;">1 = acorda cansado(a) e várias vezes à noite · 5 = acorda descansado(a)</div>
         <div class="scale" data-single="q_qualidadeSono">
           <div class="scale-item" data-value="1">1</div>
           <div class="scale-item" data-value="2">2</div>
@@ -1164,25 +1323,26 @@ input[type="number"] { -moz-appearance: textfield; }
       </div>
       
       <div class="field-group">
-        <label>Como é sua rotina diária? (intensa, calma, sedentária, ativa)</label>
+        <label>Fora do treino, quanto você se movimenta no dia?</label>
         <div class="chips" data-single="q_rotina">
           <div class="chip" data-value="Muito sedentária (escritório o dia todo)">🪑 Sedentária</div>
           <div class="chip" data-value="Pouco ativa (algumas caminhadas)">🚶 Pouco ativa</div>
           <div class="chip" data-value="Moderadamente ativa">🚶‍♀️ Moderada</div>
           <div class="chip" data-value="Muito ativa (trabalho físico, muitos passos)">🏃 Muito ativa</div>
         </div>
+        <div class="hint-box">É a energia que você gasta andando, trabalhando e subindo escada. Pesa muito no emagrecimento — às vezes mais do que o próprio treino.</div>
       </div>
     </div>
     
-    <!-- ========== STEP 11: OBSERVAÇÕES FINAIS ========== -->
-    <div class="step" data-step="11">
-      <span class="section-label">11 · Observações</span>
+    <!-- ========== STEP 12: OBSERVAÇÕES FINAIS ========== -->
+    <div class="step" data-step="12">
+      <span class="section-label">12 · Observações</span>
       <h2>Quase lá! 🎯</h2>
       <p class="subtitle">Tem algo mais que eu deveria saber?</p>
       
       <div class="field-group">
         <label>Conte qualquer coisa importante que não foi perguntada</label>
-        <textarea id="q_observacoes" rows="5" placeholder="Ex: Já fiz dieta cetogênica, tenho ansiedade alimentar, preciso de um plano flexível pelas viagens de trabalho..."></textarea>
+        <textarea id="q_observacoes" rows="5" placeholder="Ex: Viajo a trabalho 1 semana por mês, tenho um casamento em 4 meses, como muito quando fico ansioso(a)..."></textarea>
       </div>
       
       <div class="field-group">
@@ -1196,16 +1356,16 @@ input[type="number"] { -moz-appearance: textfield; }
         </div>
       </div>
       
-      <div class="field-group" style="background: rgba(255,107,26,.08); border: 1px solid rgba(255,107,26,.3); border-radius: 12px; padding: 16px; margin-top: 24px;">
-        <label style="color: var(--orange); font-size: 0.9rem; margin-bottom: 8px;">📌 Importante</label>
+      <div class="field-group" style="background: rgba(184,146,42,.08); border: 1px solid rgba(184,146,42,.3); border-radius: 12px; padding: 16px; margin-top: 24px;">
+        <label style="color: var(--gold); font-size: 0.9rem; margin-bottom: 8px;">📌 Importante</label>
         <p style="font-size: 0.85rem; color: var(--text-2); line-height: 1.5; margin: 0;">
-          Ao enviar esta anamnese, suas respostas serão encaminhadas via WhatsApp para o coach <strong>Matheus</strong>, que entrará em contato em até 24h para iniciar a montagem do seu plano personalizado.
+          Ao enviar, suas respostas chegam direto para o coach <strong>Matheus</strong>, que entra em contato pelo WhatsApp em até 24h para começar a montar seu plano personalizado.
         </p>
       </div>
     </div>
     
     <!-- ========== TELA FINAL: SUCESSO ========== -->
-    <div class="step" data-step="12">
+    <div class="step" data-step="13">
       <div class="success">
         <div class="check-circle">
           <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
@@ -1215,7 +1375,7 @@ input[type="number"] { -moz-appearance: textfield; }
         
         <div class="summary-card" id="summaryCard"></div>
         
-        <button class="btn btn-whatsapp" id="btnEnviarEmail" style="margin-top: 20px; background: linear-gradient(135deg, var(--orange), var(--orange-2)); box-shadow: 0 4px 12px var(--orange-glow);">
+        <button class="btn btn-whatsapp" id="btnEnviarEmail" style="margin-top: 20px; background: linear-gradient(135deg, var(--gold), var(--gold-2)); box-shadow: 0 4px 12px var(--gold-glow);">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
           Enviar Anamnese
         </button>
@@ -1234,10 +1394,6 @@ input[type="number"] { -moz-appearance: textfield; }
         
         <button class="btn btn-secondary" id="btnSoPDF" style="margin-top: 10px; max-width: none; background: var(--bg-2);">
           📄 Apenas baixar o PDF
-        </button>
-
-        <button class="btn btn-secondary" id="btnBaixarJSON" style="margin-top: 10px; max-width: none; background: var(--orange); color:#1a1a1a; font-weight:700;">
-          📋 Baixar dados pro app do coach (.json)
         </button>
         
         <button class="btn btn-secondary" id="btnReiniciar" style="margin-top: 10px; max-width: none; background: transparent;">
@@ -1274,7 +1430,7 @@ input[type="number"] { -moz-appearance: textfield; }
 // ============================================================
 const WHATSAPP_COACH = '5571992241609'; // Coach Matheus
 const STORAGE_KEY = 'mgcoach_anamnese_draft';
-const TOTAL_STEPS = 11; // Sem contar boas-vindas (0) e sucesso (12)
+const TOTAL_STEPS = 12; // Sem contar boas-vindas (0) e sucesso (13)
 
 // EmailJS — canal principal de envio (funciona em qualquer navegador,
 // inclusive dentro do Instagram/Facebook/TikTok, pois usa só fetch())
@@ -1385,6 +1541,10 @@ function handleDependencies(key, value) {
   if (key === 'q_redeAcademia') {
     $('grupoOutraRede').style.display = value === 'Outra' ? 'block' : 'none';
   }
+  // Contexto prévio: quem nunca treinou não precisa responder divisão/volume
+  if (key === 'q_treinoPrevio') {
+    $('grupoTreinoDetalhe').style.display = value === 'Nunca treinei' ? 'none' : 'block';
+  }
   // Lesão atual
   if (key === 'q_lesaoAtual') {
     $('grupoLesaoDesc').style.display = value === 'Sim' ? 'block' : 'none';
@@ -1417,7 +1577,7 @@ function navegar(direcao) {
   if (direcao === 'next') {
     if (!validarStep(currentStep)) return;
     coletarRespostasParciais();
-    if (currentStep < 12) currentStep++;
+    if (currentStep < 13) currentStep++;
   } else if (direcao === 'prev') {
     if (currentStep > 0) currentStep--;
   }
@@ -1439,7 +1599,7 @@ function renderStep() {
   // Atualiza contador
   const counter = $('stepCounter');
   if (currentStep === 0) counter.textContent = 'Início';
-  else if (currentStep === 12) counter.textContent = '✓ Concluído';
+  else if (currentStep === 13) counter.textContent = '✓ Concluído';
   else counter.textContent = `${currentStep}/${TOTAL_STEPS}`;
   
   // Atualiza botões
@@ -1452,7 +1612,7 @@ function renderStep() {
     btnAvancar.textContent = 'Começar →';
     btnAvancar.style.display = 'inline-flex';
     navBtns.style.display = 'block';
-  } else if (currentStep === 12) {
+  } else if (currentStep === 13) {
     navBtns.style.display = 'none';
     construirResumoFinal();
   } else if (currentStep === TOTAL_STEPS) {
@@ -1516,9 +1676,9 @@ function validarStep(step) {
     3: { keys: ['q_diasSemana', 'q_horarios'], msg: 'Preencha disponibilidade' },
     4: { keys: ['q_localTreino'], msg: 'Selecione onde você treina' },
     5: { keys: ['q_nivelExp'], msg: 'Selecione seu nível' },
-    6: { keys: ['q_lesaoAtual'], msg: 'Informe sobre lesões' },
-    7: { keys: ['q_numRefeicoes'], msg: 'Informe número de refeições' },
-    10: { keys: ['q_horasSono'], msg: 'Informe horas de sono' }
+    7: { keys: ['q_lesaoAtual'], msg: 'Informe sobre lesões' },
+    8: { keys: ['q_numRefeicoes'], msg: 'Informe número de refeições' },
+    11: { keys: ['q_horasSono'], msg: 'Informe horas de sono' }
   };
   
   if (validacoesChip[step]) {
@@ -1597,7 +1757,21 @@ function construirMensagemWA() {
   if (r.q_exerciciosEvitar) msg += `Evita: ${r.q_exerciciosEvitar}\n`;
   msg += '\n';
   
-  // 6. Saúde
+  // 6. Contexto prévio
+  const temContexto = r.q_contextAlim || (r.q_dietasPassadas && r.q_dietasPassadas.length) ||
+    r.q_dietaResultado || r.q_treinoPrevio || r.q_splitUsado || r.q_volumeSemanal;
+  if (temContexto) {
+    msg += `🧭 *CONTEXTO PRÉVIO*\n`;
+    if (r.q_contextAlim) msg += `Alimentação atual: ${r.q_contextAlim}\n`;
+    if (r.q_dietasPassadas && r.q_dietasPassadas.length) msg += `Dietas já feitas: ${r.q_dietasPassadas.join(', ')}\n`;
+    if (r.q_dietaResultado) msg += `Resultado/adesão: ${r.q_dietaResultado}\n`;
+    if (r.q_treinoPrevio) msg += `Treino prévio: ${r.q_treinoPrevio}\n`;
+    if (r.q_splitUsado) msg += `Divisão usada: ${r.q_splitUsado}\n`;
+    if (r.q_volumeSemanal) msg += `Volume semanal/músculo: ${r.q_volumeSemanal}\n`;
+    msg += '\n';
+  }
+
+  // 7. Saúde
   msg += `🏥 *SAÚDE*\n`;
   if (r.q_lesaoAtual) msg += `Lesão atual: ${r.q_lesaoAtual}\n`;
   if (r.q_lesaoDesc) msg += `Detalhes lesão: ${r.q_lesaoDesc}\n`;
@@ -1681,21 +1855,21 @@ function construirResumoFinal() {
 }
 
 // ============================================================
-// GERAÇÃO DE PDF (visual laranja/preto igual ao app)
+// GERAÇÃO DE PDF (visual branco/dourado igual ao app)
 // ============================================================
 
 // Paleta do app — replicada em RGB para o PDF
 const PDF_COLORS = {
-  bg: [10, 10, 10],          // #0a0a0a
-  bg2: [22, 22, 22],         // #161616
-  bg3: [31, 31, 31],         // #1f1f1f
-  border: [42, 42, 42],      // #2a2a2a
-  text: [245, 245, 245],     // #f5f5f5
-  text2: [184, 184, 184],    // #b8b8b8
-  text3: [112, 112, 112],    // #707070
-  orange: [255, 107, 26],    // #ff6b1a
-  orange2: [255, 140, 66],   // #ff8c42
-  orangeFaint: [40, 25, 12]  // laranja bem fraco pro fundo dos blocos
+  bg: [255, 255, 255],       // branco
+  bg2: [248, 247, 243],      // off-white dos blocos
+  bg3: [240, 238, 232],      // creme dos chips
+  border: [224, 221, 210],   // borda quente
+  text: [28, 27, 24],        // #1C1B18
+  text2: [107, 105, 96],     // #6B6960
+  text3: [168, 166, 158],    // #A8A69E
+  gold: [184, 146, 42],      // #B8922A
+  gold2: [212, 170, 64],     // #D4AA40
+  goldFaint: [245, 237, 214] // #F5EDD6
 };
 
 function gerarPDFAnamnese() {
@@ -1754,7 +1928,7 @@ function gerarPDFAnamnese() {
   // Cabeçalho (1ª página)
   function desenharCabecalho() {
     // Faixa laranja no topo
-    setFill(PDF_COLORS.orange);
+    setFill(PDF_COLORS.gold);
     doc.rect(0, 0, PAGE_W, 3, 'F');
     
     y = 16;
@@ -1763,7 +1937,7 @@ function gerarPDFAnamnese() {
     const logoX = MARGIN;
     const logoY = y;
     const logoSize = 14;
-    setFill(PDF_COLORS.orange);
+    setFill(PDF_COLORS.gold);
     doc.roundedRect(logoX, logoY, logoSize, logoSize, 3, 3, 'F');
     
     // Estrela vetorial dentro do logo (5 pontas, replicando a do app)
@@ -1792,7 +1966,7 @@ function gerarPDFAnamnese() {
     const brandY = logoY + 7;
     doc.text('MG', logoX + logoSize + 5, brandY);
     const mgW = doc.getTextWidth('MG');
-    setText(PDF_COLORS.orange);
+    setText(PDF_COLORS.gold);
     doc.text('.', logoX + logoSize + 5 + mgW, brandY);
     const dotW = doc.getTextWidth('.');
     setText(PDF_COLORS.text);
@@ -1828,10 +2002,12 @@ function gerarPDFAnamnese() {
     checarEspaco(34);
     const boxH = 30;
     setFill(PDF_COLORS.bg2);
-    doc.roundedRect(MARGIN, y, CONTENT_W, boxH, 3, 3, 'F');
+    setDraw(PDF_COLORS.border);
+    doc.setLineWidth(0.2);
+    doc.roundedRect(MARGIN, y, CONTENT_W, boxH, 3, 3, 'FD');
     
     // Borda laranja sutil à esquerda (acento)
-    setFill(PDF_COLORS.orange);
+    setFill(PDF_COLORS.gold);
     doc.rect(MARGIN, y, 1.5, boxH, 'F');
     
     const innerX = MARGIN + 6;
@@ -1878,7 +2054,7 @@ function gerarPDFAnamnese() {
     // Pílula laranja com número
     const pillW = 7;
     const pillH = 5;
-    setFill(PDF_COLORS.orange);
+    setFill(PDF_COLORS.gold);
     doc.roundedRect(MARGIN, y - 3.5, pillW, pillH, 1, 1, 'F');
     setText([255, 255, 255]);
     doc.setFont('helvetica', 'bold');
@@ -1886,14 +2062,14 @@ function gerarPDFAnamnese() {
     doc.text(String(numero), MARGIN + pillW / 2, y, { align: 'center' });
     
     // Título
-    setText(PDF_COLORS.orange);
+    setText(PDF_COLORS.gold);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(11);
     doc.text(titulo.toUpperCase(), MARGIN + pillW + 3, y);
     
     y += 3;
     // Linha
-    setDraw(PDF_COLORS.orange);
+    setDraw(PDF_COLORS.gold);
     doc.setLineWidth(0.4);
     doc.line(MARGIN, y, MARGIN + 20, y);
     setDraw(PDF_COLORS.border);
@@ -1989,7 +2165,7 @@ function gerarPDFAnamnese() {
         checarEspaco(lineH + 4);
       }
       setFill(PDF_COLORS.bg3);
-      setDraw(PDF_COLORS.orange);
+      setDraw(PDF_COLORS.gold);
       doc.setLineWidth(0.2);
       doc.roundedRect(x, y, w, lineH, 1.5, 1.5, 'FD');
       setText(PDF_COLORS.text);
@@ -2038,8 +2214,22 @@ function gerarPDFAnamnese() {
   if (r.q_exerciciosEvitar) blocoTexto('Exercícios a evitar', r.q_exerciciosEvitar);
   espaco();
   
-  // 6 - Saúde
-  tituloSecao(6, 'Saúde');
+  // 6 - Contexto prévio
+  const temCtx = r.q_contextAlim || (r.q_dietasPassadas && r.q_dietasPassadas.length) ||
+    r.q_dietaResultado || r.q_treinoPrevio || r.q_splitUsado || r.q_volumeSemanal;
+  if (temCtx) {
+    tituloSecao(6, 'Contexto prévio');
+    if (r.q_contextAlim) blocoTexto('Alimentação atual', r.q_contextAlim);
+    if (r.q_dietasPassadas && r.q_dietasPassadas.length) chipsLinha('Dietas já realizadas', r.q_dietasPassadas);
+    if (r.q_dietaResultado) blocoTexto('Resultados e adesão', r.q_dietaResultado);
+    linhaInfo('Treino prévio', r.q_treinoPrevio);
+    linhaInfo('Divisão usada', r.q_splitUsado);
+    linhaInfo('Volume/músculo/sem', r.q_volumeSemanal);
+    espaco();
+  }
+
+  // 7 - Saúde
+  tituloSecao(7, 'Saúde');
   linhaInfo('Lesão atual', r.q_lesaoAtual);
   if (r.q_lesaoDesc) blocoTexto('Detalhes da lesão', r.q_lesaoDesc);
   if (r.q_condicoes && r.q_condicoes.length) chipsLinha('Condições', r.q_condicoes);
@@ -2048,8 +2238,8 @@ function gerarPDFAnamnese() {
   if (r.q_gravidez && r.q_gravidez !== 'Não') linhaInfo('Gestação/Lactação', r.q_gravidez);
   espaco();
   
-  // 7 - Rotina alimentar
-  tituloSecao(7, 'Rotina alimentar');
+  // 8 - Rotina alimentar
+  tituloSecao(8, 'Rotina alimentar');
   linhaInfo('Refeições/dia', r.q_numRefeicoes);
   if (r.q_horaAcordar || r.q_horaDormir) {
     const horarios = [];
@@ -2062,16 +2252,16 @@ function gerarPDFAnamnese() {
   linhaInfo('Água/dia', r.q_agua);
   espaco();
   
-  // 8 - Preferências alimentares
-  tituloSecao(8, 'Preferências alimentares');
+  // 9 - Preferências alimentares
+  tituloSecao(9, 'Preferências alimentares');
   if (r.q_alimentosFreq) blocoTexto('Consome com frequência', r.q_alimentosFreq);
   if (r.q_alimentosNao) blocoTexto('NÃO consome', r.q_alimentosNao);
   if (r.q_restricoes && r.q_restricoes.length) chipsLinha('Restrições', r.q_restricoes);
   if (r.q_alimentosFav) blocoTexto('Favoritos (manter no plano)', r.q_alimentosFav);
   espaco();
   
-  // 9 - Suplementação e hábitos
-  tituloSecao(9, 'Suplementação e hábitos');
+  // 10 - Suplementação e hábitos
+  tituloSecao(10, 'Suplementação e hábitos');
   if (r.q_suplementos && r.q_suplementos.length) chipsLinha('Suplementos em uso', r.q_suplementos);
   linhaInfo('Outros suplementos', r.q_supOutros);
   linhaInfo('Álcool', r.q_alcool);
@@ -2079,17 +2269,17 @@ function gerarPDFAnamnese() {
   linhaInfo('Tabaco', r.q_fuma);
   espaco();
   
-  // 10 - Sono e estresse
-  tituloSecao(10, 'Sono e estresse');
+  // 11 - Sono e estresse
+  tituloSecao(11, 'Sono e estresse');
   linhaInfo('Horas de sono', r.q_horasSono);
   if (r.q_qualidadeSono) linhaInfo('Qualidade do sono', `${r.q_qualidadeSono}/5`);
   if (r.q_estresse) linhaInfo('Nível de estresse', `${r.q_estresse}/5`);
   linhaInfo('Rotina diária', r.q_rotina);
   espaco();
   
-  // 11 - Observações
+  // 12 - Observações
   if (r.q_observacoes || r.q_origem) {
-    tituloSecao(11, 'Observações finais');
+    tituloSecao(12, 'Observações finais');
     if (r.q_observacoes) blocoTexto('Observações do paciente', r.q_observacoes);
     linhaInfo('Conheceu por', r.q_origem);
     espaco();
@@ -2217,7 +2407,7 @@ function mostrarModalInstrucoes(opts) {
   modal.id = 'modalInstrucoes';
   modal.style.cssText = `
     position: fixed; inset: 0; z-index: 9999;
-    background: rgba(0,0,0,.85); backdrop-filter: blur(8px);
+    background: rgba(28,27,24,.45); backdrop-filter: blur(8px);
     display: flex; align-items: center; justify-content: center;
     padding: 20px; animation: fadeIn 0.25s;
   `;
@@ -2227,15 +2417,15 @@ function mostrarModalInstrucoes(opts) {
   if (isInApp) {
     // Dentro do Instagram/Facebook - WhatsApp aqui é opcional (e-mail já é o canal principal)
     conteudo = `
-      <div style="background:var(--bg-2);border:1px solid var(--orange);border-radius:16px;padding:24px;max-width:420px;width:100%;max-height:90vh;overflow-y:auto;">
+      <div style="background:var(--bg-2);border:1px solid var(--gold);border-radius:16px;padding:24px;max-width:420px;width:100%;max-height:90vh;overflow-y:auto;">
         <div style="text-align:center;margin-bottom:16px;">
           <div style="font-size:3rem;">📲</div>
-          <h3 style="color:var(--orange);margin:8px 0;font-size:1.2rem;">Você está no navegador do ${nomeApp}</h3>
+          <h3 style="color:var(--gold);margin:8px 0;font-size:1.2rem;">Você está no navegador do ${nomeApp}</h3>
           <p style="color:var(--text-2);font-size:0.9rem;line-height:1.5;">O envio por WhatsApp aqui dentro é limitado. Se já usou o botão "Enviar Anamnese", o coach já recebeu tudo — esse passo é só um extra. Pra mandar também por WhatsApp, abra esta página no navegador do seu celular:</p>
         </div>
         
         <div style="background:var(--bg-3);border-radius:10px;padding:14px;margin:16px 0;border:1px solid var(--border);">
-          <div style="font-weight:700;color:var(--orange);font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">📲 Como abrir externamente:</div>
+          <div style="font-weight:700;color:var(--gold);font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">📲 Como abrir externamente:</div>
           <ol style="color:var(--text);font-size:0.9rem;line-height:1.7;padding-left:20px;margin:0;">
             <li>Toque nos <strong>3 pontinhos (⋯)</strong> no canto superior direito</li>
             <li>Escolha <strong>"Abrir no navegador"</strong> ou <strong>"Abrir no Chrome / Safari"</strong></li>
@@ -2255,33 +2445,33 @@ function mostrarModalInstrucoes(opts) {
   } else {
     // Mobile sem Web Share OU desktop - PDF baixado, precisa anexar manualmente
     conteudo = `
-      <div style="background:var(--bg-2);border:1px solid var(--orange);border-radius:16px;padding:24px;max-width:440px;width:100%;max-height:92vh;overflow-y:auto;">
+      <div style="background:var(--bg-2);border:1px solid var(--gold);border-radius:16px;padding:24px;max-width:440px;width:100%;max-height:92vh;overflow-y:auto;">
         <div style="text-align:center;margin-bottom:16px;">
           <div style="font-size:3rem;">✅</div>
-          <h3 style="color:var(--orange);margin:8px 0;font-size:1.2rem;">PDF baixado!</h3>
+          <h3 style="color:var(--gold);margin:8px 0;font-size:1.2rem;">PDF baixado!</h3>
           <p style="color:var(--text-2);font-size:0.9rem;line-height:1.5;">Falta o último passo pra enviar pro coach — atenção:</p>
         </div>
         
         <div style="background:var(--bg-3);border-radius:10px;padding:14px;margin:16px 0;border:1px solid var(--border);">
-          <div style="font-weight:700;color:var(--orange);font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">📋 Passo a passo:</div>
+          <div style="font-weight:700;color:var(--gold);font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">📋 Passo a passo:</div>
           <div style="color:var(--text);font-size:0.9rem;line-height:1.6;">
             <div style="margin-bottom:10px;display:flex;gap:8px;">
-              <span style="background:var(--orange);color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;">1</span>
+              <span style="background:var(--gold);color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;">1</span>
               <span>Toque em <strong style="color:#25D366">"Abrir WhatsApp"</strong> abaixo — vai abrir já com a mensagem pronta</span>
             </div>
             <div style="margin-bottom:10px;display:flex;gap:8px;">
-              <span style="background:var(--orange);color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;">2</span>
+              <span style="background:var(--gold);color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;">2</span>
               <span>No WhatsApp, toque no <strong>clipe 📎</strong>, escolha <strong>"Documento"</strong> e selecione o PDF baixado</span>
             </div>
             <div style="margin-bottom:0;display:flex;gap:8px;">
-              <span style="background:var(--orange);color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;">3</span>
-              <span><strong>Toque no botão de enviar (✈️)</strong> e <strong style="color:var(--orange)">aguarde aparecer os ✓✓</strong> — só assim a mensagem chega no coach!</span>
+              <span style="background:var(--gold);color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;">3</span>
+              <span><strong>Toque no botão de enviar (✈️)</strong> e <strong style="color:var(--gold)">aguarde aparecer os ✓✓</strong> — só assim a mensagem chega no coach!</span>
             </div>
           </div>
         </div>
         
-        <div style="background:rgba(255,107,26,.1);border:1px solid var(--orange);border-radius:10px;padding:12px;margin-bottom:14px;">
-          <div style="color:var(--orange);font-weight:700;font-size:0.85rem;margin-bottom:4px;">⚠️ Muito importante</div>
+        <div style="background:rgba(184,146,42,.1);border:1px solid var(--gold);border-radius:10px;padding:12px;margin-bottom:14px;">
+          <div style="color:var(--gold);font-weight:700;font-size:0.85rem;margin-bottom:4px;">⚠️ Muito importante</div>
           <div style="color:var(--text-2);font-size:0.82rem;line-height:1.5;">Se você fechar o WhatsApp <strong>antes</strong> do ✓✓ aparecer, a mensagem <strong>não foi enviada</strong>. Volte e confirme!</div>
         </div>
         
@@ -2330,39 +2520,39 @@ function mostrarModalConfirmacao(opts) {
   modal.id = 'modalConfirmacao';
   modal.style.cssText = `
     position: fixed; inset: 0; z-index: 9999;
-    background: rgba(0,0,0,.88); backdrop-filter: blur(8px);
+    background: rgba(28,27,24,.5); backdrop-filter: blur(8px);
     display: flex; align-items: center; justify-content: center;
     padding: 20px; animation: fadeIn 0.25s;
   `;
   
   modal.innerHTML = `
-    <div style="background:var(--bg-2);border:1px solid var(--orange);border-radius:16px;padding:24px;max-width:440px;width:100%;max-height:92vh;overflow-y:auto;">
+    <div style="background:var(--bg-2);border:1px solid var(--gold);border-radius:16px;padding:24px;max-width:440px;width:100%;max-height:92vh;overflow-y:auto;">
       <div style="text-align:center;margin-bottom:18px;">
         <div style="font-size:3.2rem;line-height:1;">📲</div>
-        <h3 style="color:var(--orange);margin:10px 0 6px;font-size:1.25rem;">Quase lá!</h3>
+        <h3 style="color:var(--gold);margin:10px 0 6px;font-size:1.25rem;">Quase lá!</h3>
         <p style="color:var(--text-2);font-size:0.92rem;line-height:1.5;margin:0;">Sua anamnese foi preparada. Falta <strong style="color:var(--text)">1 passo crítico</strong> dentro do WhatsApp:</p>
       </div>
       
       <div style="background:var(--bg-3);border-radius:10px;padding:16px;margin-bottom:14px;border:1px solid var(--border);">
-        <div style="font-weight:700;color:var(--orange);font-size:0.78rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">✅ Confirme dentro do WhatsApp:</div>
+        <div style="font-weight:700;color:var(--gold);font-size:0.78rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">✅ Confirme dentro do WhatsApp:</div>
         <div style="color:var(--text);font-size:0.92rem;line-height:1.6;">
           <div style="margin-bottom:10px;display:flex;gap:10px;align-items:flex-start;">
-            <span style="background:var(--orange);color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;flex-shrink:0;margin-top:1px;">1</span>
+            <span style="background:var(--gold);color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;flex-shrink:0;margin-top:1px;">1</span>
             <span>Veja se o <strong>PDF está anexado</strong> na conversa</span>
           </div>
           <div style="margin-bottom:10px;display:flex;gap:10px;align-items:flex-start;">
-            <span style="background:var(--orange);color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;flex-shrink:0;margin-top:1px;">2</span>
+            <span style="background:var(--gold);color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;flex-shrink:0;margin-top:1px;">2</span>
             <span>Toque no botão de <strong>enviar (✈️)</strong> dentro do WhatsApp</span>
           </div>
           <div style="margin-bottom:0;display:flex;gap:10px;align-items:flex-start;">
-            <span style="background:var(--orange);color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;flex-shrink:0;margin-top:1px;">3</span>
-            <span><strong style="color:var(--orange)">Aguarde os ✓✓ aparecerem</strong> — significa que chegou no coach</span>
+            <span style="background:var(--gold);color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;flex-shrink:0;margin-top:1px;">3</span>
+            <span><strong style="color:var(--gold)">Aguarde os ✓✓ aparecerem</strong> — significa que chegou no coach</span>
           </div>
         </div>
       </div>
       
-      <div style="background:rgba(255,107,26,.1);border:1px solid var(--orange);border-radius:10px;padding:13px;margin-bottom:16px;">
-        <div style="color:var(--orange);font-weight:700;font-size:0.88rem;margin-bottom:4px;">⚠️ Atenção</div>
+      <div style="background:rgba(184,146,42,.1);border:1px solid var(--gold);border-radius:10px;padding:13px;margin-bottom:16px;">
+        <div style="color:var(--gold);font-weight:700;font-size:0.88rem;margin-bottom:4px;">⚠️ Atenção</div>
         <div style="color:var(--text-2);font-size:0.84rem;line-height:1.5;">Se você fechou o WhatsApp <strong>sem ver os ✓✓</strong>, a mensagem <strong>NÃO foi enviada</strong>. Volte na conversa e toque em enviar!</div>
       </div>
       
@@ -2427,33 +2617,7 @@ async function enviarPorEmail() {
   const nome = r.q_nome || 'Sem nome';
   const telefone = r.q_whatsapp || '—';
   const dataEnvio = new Date().toLocaleString('pt-BR');
-  let conteudo = construirMensagemWA();
-
-  // Anexa o bloco de dados estruturados (JSON) no fim do e-mail.
-  // O coach copia esse trecho e cola no app pra importar automaticamente.
-  try {
-    const pacoteDados = {
-      tipo: 'mgcoach_anamnese',
-      versao: 1,
-      geradoEm: new Date().toISOString(),
-      basico: {
-        nome: r.q_nome || '', sexo: r.q_sexo || '', idade: r.q_idade || '',
-        contato: r.q_whatsapp || '', altura: r.q_altura || ''
-      },
-      nutri: {
-        peso: r.q_peso || '', objetivo: r.q_objetivoDesc || '', prazo: r.q_prazo || '',
-        profissao: r.q_profissao || '', cidade: r.q_cidade || ''
-      },
-      respostasCompletas: r
-    };
-    conteudo += '\n\n========================================\n'
-      + 'DADOS PARA IMPORTAR NO APP (copie tudo entre as linhas)\n'
-      + '========================================\n'
-      + '###MGCOACH_INICIO###\n'
-      + JSON.stringify(pacoteDados)
-      + '\n###MGCOACH_FIM###\n'
-      + '========================================';
-  } catch (e) { console.warn('falha ao anexar JSON no email', e); }
+  const conteudo = construirMensagemWA();
 
   const payload = {
     service_id: EMAILJS_SERVICE_ID,
@@ -2535,7 +2699,7 @@ function mostrarErroEnvio() {
   }
   box.style.display = 'block';
   box.innerHTML = `
-    <div style="color:#ff6b6b;font-weight:700;font-size:0.85rem;margin-bottom:4px;">⚠️ Não foi possível enviar agora</div>
+    <div style="color:var(--error);font-weight:700;font-size:0.85rem;margin-bottom:4px;">⚠️ Não foi possível enviar agora</div>
     <div style="color:var(--text-2);font-size:0.82rem;line-height:1.5;">Verifique sua internet e toque em "Enviar Anamnese" de novo. Se persistir, use a opção de WhatsApp abaixo.</div>
   `;
 }
@@ -2650,68 +2814,6 @@ function baixarSomentePDF() {
 }
 
 // ============================================================
-// EXPORTAR DADOS PRO APP DO COACH (.json estruturado)
-// ------------------------------------------------------------
-// Gera um arquivo que o app MG COACH importa direto no cadastro
-// compartilhado (nome, sexo, nascimento/idade, contato, altura)
-// + dados do NUTRI (peso, objetivo) + ficha rica (observações).
-// ============================================================
-function baixarJSONAnamnese() {
-  coletarRespostasParciais();
-  const r = respostas;
-  if (!r.q_nome) { toast('⚠️ Preencha pelo menos o nome', 3500); return; }
-
-  // Monta um pacote no formato que o app entende
-  const pacote = {
-    tipo: 'mgcoach_anamnese',
-    versao: 1,
-    geradoEm: new Date().toISOString(),
-    // dados básicos -> cadastro compartilhado dos 3 apps
-    basico: {
-      nome: r.q_nome || '',
-      sexo: r.q_sexo || '',
-      idade: r.q_idade || '',
-      contato: r.q_whatsapp || '',
-      altura: r.q_altura || ''
-    },
-    // dados pro NUTRI (TMB + ficha)
-    nutri: {
-      peso: r.q_peso || '',
-      objetivo: r.q_objetivoDesc || '',
-      prazo: r.q_prazo || '',
-      profissao: r.q_profissao || '',
-      cidade: r.q_cidade || ''
-    },
-    // todas as respostas, pra montar observações/ficha completa
-    respostasCompletas: r
-  };
-
-  const conteudo = JSON.stringify(pacote, null, 2);
-  const nomeBase = (r.q_nome || 'anamnese').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
-  const nomeArq = `anamnese_${nomeBase}.json`;
-
-  // Tenta compartilhar como arquivo; se não, baixa
-  (async () => {
-    try {
-      const arquivo = new File([conteudo], nomeArq, { type: 'application/json' });
-      if (navigator.canShare && navigator.canShare({ files: [arquivo] })) {
-        await navigator.share({ files: [arquivo], title: 'Anamnese ' + (r.q_nome || ''), text: 'Dados da anamnese para o coach' });
-        toast('✅ Dados compartilhados!');
-        return;
-      }
-    } catch (e) {
-      if (e && e.name === 'AbortError') return;
-    }
-    const blob = new Blob([conteudo], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = nomeArq;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    toast('📋 Arquivo de dados baixado! Envie junto com o PDF pro coach.');
-  })();
-}
-
-// ============================================================
 // INICIALIZAÇÃO
 // ============================================================
 function init() {
@@ -2722,7 +2824,6 @@ function init() {
   $('btnEnviarEmail').addEventListener('click', handleEnviarEmail);
   $('btnEnviarWA').addEventListener('click', enviarWhatsApp);
   $('btnSoPDF').addEventListener('click', baixarSomentePDF);
-  { const b = $('btnBaixarJSON'); if (b) b.addEventListener('click', baixarJSONAnamnese); }
   $('btnReiniciar').addEventListener('click', () => {
     if (confirm('Refazer a anamnese? Suas respostas atuais serão apagadas.')) {
       limparRascunho();
@@ -2744,7 +2845,7 @@ function init() {
   
   // Tentar carregar rascunho
   const rascunho = carregarRascunho();
-  if (rascunho && rascunho.step > 0 && rascunho.step < 12) {
+  if (rascunho && rascunho.step > 0 && rascunho.step < 13) {
     const continuar = confirm('Você tem uma anamnese em andamento. Quer continuar de onde parou?');
     if (continuar) {
       Object.assign(respostas, rascunho.respostas || {});
@@ -2803,10 +2904,10 @@ function mostrarBannerInApp(nomeApp) {
   banner.id = 'bannerInApp';
   banner.style.cssText = `
     position: fixed; top: 4px; left: 0; right: 0; z-index: 200;
-    background: linear-gradient(90deg, var(--orange), var(--orange-2));
+    background: linear-gradient(90deg, var(--gold), var(--gold-2));
     color: #fff; padding: 10px 14px; font-size: 0.82rem; font-weight: 600;
     display: flex; align-items: center; gap: 10px; justify-content: space-between;
-    animation: slideIn 0.4s; box-shadow: 0 4px 12px rgba(0,0,0,.3);
+    animation: slideIn 0.4s; box-shadow: 0 4px 12px rgba(28,27,24,.12);
   `;
   banner.innerHTML = `
     <div style="flex:1;line-height:1.4;">
