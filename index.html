@@ -1438,6 +1438,10 @@ const EMAILJS_SERVICE_ID = 'service_t1k5676';
 const EMAILJS_TEMPLATE_ID = 'template_kwap7nj';
 const EMAILJS_PUBLIC_KEY = 'Ir-eYKsYlljg1cU2p';
 
+// Envio direto para o app MG COACH Consultoria: endereço do Google Apps Script (termina em /exec).
+// Vazio = só manda o e-mail, como antes.
+const APP_INBOX_URL = '';
+
 // ============================================================
 // ESTADO
 // ============================================================
@@ -1474,7 +1478,7 @@ function carregarRascunho() {
 }
 
 function limparRascunho() {
-  try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+  try { localStorage.removeItem(STORAGE_KEY); localStorage.removeItem('mgcoach_anamnese_envio_id'); } catch(e) {}
 }
 
 // ============================================================
@@ -2645,7 +2649,72 @@ async function enviarPorEmail() {
   return true;
 }
 
+// ============================================================
+// ENVIO DIRETO PARA O APP DO COACH
+// Manda as respostas (com as perguntas e as seções) para o Apps Script,
+// que guarda no repositório privado do app. Não atrapalha o e-mail:
+// se falhar, o e-mail continua sendo o envio principal.
+// ============================================================
+const ENVIO_ID_KEY = 'mgcoach_anamnese_envio_id';
+function idDoEnvio() {
+  let id = '';
+  try { id = localStorage.getItem(ENVIO_ID_KEY) || ''; } catch (e) {}
+  if (!/^[a-z0-9]{6,40}$/.test(id)) {
+    id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    try { localStorage.setItem(ENVIO_ID_KEY, id); } catch (e) {}
+  }
+  return id;
+}
+function valorResposta(v) {
+  if (Array.isArray(v)) return v.filter(Boolean).join(', ');
+  return String(v == null ? '' : v).trim();
+}
+function rotuloDoCampo(el) {
+  const grupo = el.closest('.field-group') || el.parentElement;
+  if (!grupo) return '';
+  let rot = '';
+  grupo.querySelectorAll('label').forEach(l => {
+    if (l.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING) rot = l.textContent;
+  });
+  return rot.replace(/\*/g, '').replace(/\s+/g, ' ').trim();
+}
+function montarSecoesAnamnese() {
+  const secoes = [];
+  for (let n = 1; n <= TOTAL_STEPS; n++) {
+    const step = document.querySelector(`[data-step="${n}"]`);
+    if (!step) continue;
+    const h2 = step.querySelector('h2');
+    const itens = [];
+    const vistos = new Set();
+    step.querySelectorAll('[id^="q_"], [data-single^="q_"], [data-multi^="q_"]').forEach(el => {
+      const k = el.id && el.id.startsWith('q_') ? el.id : (el.dataset.single || el.dataset.multi);
+      if (!k || vistos.has(k)) return;
+      vistos.add(k);
+      let v = valorResposta(respostas[k]);
+      if (!v) return;
+      if (el.querySelector && el.querySelector('.scale-item') && /^[1-5]$/.test(v)) v += ' de 5';
+      itens.push([rotuloDoCampo(el) || k.replace(/^q_/, '').replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, c => c.toUpperCase()), v]);
+    });
+    if (itens.length) secoes.push({ t: h2 ? h2.textContent.replace(/\s+/g, ' ').trim() : 'Etapa ' + n, itens });
+  }
+  return secoes;
+}
+function enviarParaApp() {
+  if (!APP_INBOX_URL) return;
+  try {
+    coletarRespostasParciais();
+    const limpas = {};
+    Object.keys(respostas).forEach(k => {
+      const v = respostas[k];
+      if (Array.isArray(v) ? v.length : String(v == null ? '' : v).trim()) limpas[k] = v;
+    });
+    const pacote = { tipo: 'mgcoach_anamnese_v2', id: idDoEnvio(), enviadaEm: new Date().toISOString(), respostas: limpas, secoes: montarSecoesAnamnese() };
+    fetch(APP_INBOX_URL, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(pacote) }).catch(() => {});
+  } catch (e) { /* o e-mail segue normalmente */ }
+}
+
 async function handleEnviarEmail() {
+  enviarParaApp();
   const btn = $('btnEnviarEmail');
   const htmlOriginal = btn.innerHTML;
   btn.disabled = true;
@@ -2714,6 +2783,7 @@ function esconderErroEnvio() {
 // ============================================================
 async function enviarWhatsApp() {
   coletarRespostasParciais();
+  enviarParaApp();
   
   const ambiente = detectarAmbiente();
   const msg = construirMensagemWA();

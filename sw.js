@@ -1,5 +1,5 @@
 // Anamnese MG COACH - Service Worker
-const CACHE_NAME = 'mgcoach-anamnese-v1';
+const CACHE_NAME = 'mgcoach-anamnese-v3';
 const ASSETS = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', (event) => {
